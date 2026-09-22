@@ -1,23 +1,23 @@
-# CPSC 490 — Group 〈N〉 〈Group Name〉
+# CPSC 490 — Group 4 Epic Engineer
 
 > **Copy this file to `README.md` in YOUR repository and fill it in.**
 > (In this example repository the root `README.md` is the setup guide, so the
 > team README model lives here.)
 
-**Project title:** 〈Title〉
-**Sponsor:** 〈RTX-3 / EL-1 / SNX-2 / independent〉
-**Section:** 〈01 (Tue) | 05 (Thu)〉
+**Project title:** Sentinel
+**Sponsor:** independent
+**Section:** 01 Tuesday
 
 ## Team
 
 | Name | GitHub | Role | Leader |
 |---|---|---|---|
-| 〈Last, First〉 | @〈username〉 | 〈e.g. backend, docs lead〉 | ✅ |
-| 〈…〉 | @〈…〉 | 〈…〉 | |
-| 〈…〉 | @〈…〉 | 〈…〉 | |
-| 〈…〉 | @〈…〉 | 〈…〉 | |
+| Orozco, Bryan | @Bryancostco | leader/QA | ✅ |
+| De Belen, Leila | @leiladb | front end | |
+| Cox, Justin | @justincox8 | back end | |
+| Quach, Kyle | @kyquach | back end | |
 
-**Contact person:** 〈Name〉 — 〈email〉
+**Contact person:** Bryan Orozco — bryancostco@csu.fullerton.edu
 
 ## Links
 
@@ -29,8 +29,7 @@
 
 ## Project summary
 
-〈3–5 sentences a stranger can understand: the problem, your approach, what
-will exist at the end of the semester.〉
+Home networks and small servers rarely have any real security monitoring — most people only find out something's wrong after the damage is done. We're proposing a self-hosted platform that would ingest logs from your devices, use ML to spot unusual activity, and explain what it found in plain language instead of cryptic alerts. It would learn what "normal" looks like for your specific network, rather than relying on fixed rules that miss anything unfamiliar. By the end of the semester, we'll have a complete proposal covering the system architecture, our approach to the log pipeline and anomaly detection model, and a plan for the dashboard and alerting components.
 
 ## How we work
 
