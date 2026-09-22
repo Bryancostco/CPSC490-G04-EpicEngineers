@@ -34,7 +34,7 @@ Home networks and small servers rarely have any real security monitoring — mos
 ## How we work
 
 - Sprints: four 2-week sprints (`Sprint 1`–`Sprint 4` milestones).
-  Sprint boundary ritual every other 〈day〉.
+  Sprint boundary ritual every other Tuesday.
 - Every change lands by pull request; **the author never approves their own PR**.
 - Every issue carries: assignee (owner), milestone (sprint), `priority:`,
   and a `sp:` story-point label.
