@@ -1,9 +1,5 @@
 # CPSC 490 — Group 4 Epic Engineer
 
-> **Copy this file to `README.md` in YOUR repository and fill it in.**
-> (In this example repository the root `README.md` is the setup guide, so the
-> team README model lives here.)
-
 **Project title:** Sentinel
 **Sponsor:** independent
 **Section:** 01 Tuesday
@@ -22,7 +18,7 @@
 ## Links
 
 - **Proposal:** [`proposal/proposal.md`](proposal/proposal.md)
-- **Project board:** [projects]([https://github.com/users/Bryancostco/projects/1](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/projects)).
+- **Project board:** [`projects`](https://github.com/users/Bryancostco/projects/1).
 - **Specifications:** [`docs/specs/`](docs/specs/) · **Designs:** [`docs/design/`](docs/design/)
 - **Prototype:** [`prototype/`](prototype/) — run instructions in its README
 - **Sprint reviews:** [`docs/sprint-reviews/`](docs/sprint-reviews/)
