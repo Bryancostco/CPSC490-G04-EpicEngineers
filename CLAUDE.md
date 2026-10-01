@@ -1,38 +1,13 @@
-# Project context for AI assistants
-
-**Copy this file into your repository and edit the 〈brackets〉.** Every
-teammate's AI session then starts from the same facts, so you get consistent
-output instead of five people re-explaining the project five different ways.
-
-Claude Code reads `CLAUDE.md` automatically. `AGENTS.md` is the same idea as
-a cross-tool convention; GitHub Copilot reads
-`.github/copilot-instructions.md`, Cursor `.cursor/rules/`, Gemini CLI
-`GEMINI.md`. Keep **one** real file and copy it for whatever your team uses;
-never let two versions drift.
-
-**Keep this file under about two pages.** For every line ask: *would removing
-this cause a mistake?* If not, cut it. A bloated context file gets ignored —
-including the rules you care about — and emphasizing every line emphasizes
-none of them. Rules that MUST hold (formatting, no direct pushes, lint before
-commit) belong in CI or a git hook where they are enforced rather than
-merely suggested; see `docs/aidlc/loop-engineering.md`.
-
-> **You are the engineer. The assistant drafts; you decide and you verify.**
-> This course is **human-in-the-loop (HITL)**: nothing reaches `main` that a
-> human did not read, verify against acceptance criteria, and approve.
-
----
-
 ## The project
 
 - **Course:** CPSC 490 Undergraduate Seminar, Fall 2026 (proposal + prototype
   semester; full implementation happens in CPSC 491).
-- **Team:** Group 〈N〉 〈name〉 — members in `README.md`.
-- **Project:** 〈one or two sentences a stranger understands〉
-- **Sponsor:** 〈RTX-3 / EL-1 / SNX-n / independent〉
+- **Team:** Group 4 Epic Engineers — members in `README.md`.
+- **Project:** A self-hosted platform that ingests logs from your servers and home network, uses ML to spot unusual activity, and explains what it found in plain language instead of cryptic alerts — learning what "normal" looks like for your specific network rather than relying on fixed rules that miss anything unfamiliar.
+- **Sponsor:** independent
 - **Source of truth:** `proposal/proposal.md`. Specs in `docs/specs/`,
   designs in `docs/design/`, proof-of-concept code in `prototype/`.
-- **Stack (prototype):** 〈languages, frameworks, services〉
+- **Stack (prototype):** Python, FastAPI, PostgreSQL, PyTorch, Fluent Bit (log ingestion), Chart.js/Jinja2
 
 ## How we work
 
@@ -86,7 +61,7 @@ alternatives and trade-off analyses.
 
 - Markdown documents, one topic per file; every doc's first lines name its
   epic and stories (`> Epic: #1 · Stories: #2, #4`).
-- Branches: `<issue-number>-short-slug` (e.g. `12-login-spec`).
+- Branches: `issue-number>-short-slug` (e.g. `12-login-spec`).
 - Commit subject: imperative, under ~72 chars; body explains *why*.
 - Disclose AI use in each PR (see `.github/PULL_REQUEST_TEMPLATE.md`) and in
   the proposal's **AI Usage** section.
