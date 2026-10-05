@@ -1,7 +1,7 @@
 # CPSC 490 — Group 4 Epic Engineer
 
-**Project title:** Sentinel
-**Sponsor:** independent
+**Project title:** Polygon Prediction Market PNL and Trader Profitability Analytics
+**Sponsor:** SNX-1
 **Section:** 01 Tuesday
 
 ## Team
@@ -25,7 +25,7 @@
 
 ## Project summary
 
-Home networks and small servers rarely have any real security monitoring — most people only find out something's wrong after the damage is done. We're proposing a self-hosted platform that would ingest logs from your devices, use ML to spot unusual activity, and explain what it found in plain language instead of cryptic alerts. It would learn what "normal" looks like for your specific network, rather than relying on fixed rules that miss anything unfamiliar. By the end of the semester, we'll have a complete proposal covering the system architecture, our approach to the log pipeline and anomaly detection model, and a plan for the dashboard and alerting components.
+Polymarket is a prediction market where people trade on the outcomes of real world events, and every trade is recorded on the Polygon blockchain. That raw on chain data shows what each wallet traded, but not how much it made or lost, and existing tracker sites rank the top traders without explaining what drives their success. We're proposing a profit and loss (PNL) accounting tool, built on SonarX's Polygon blockchain data, that parses on chain trades, matches positions to market resolutions, and computes realized and unrealized PNL for each wallet. It would then rank the most profitable traders and identify what drives their edge, in a dashboard that surfaces top performers and trading patterns. By the end of the semester, we'll have a complete proposal and a working prototype in `prototype/`, with the full dashboard built in CPSC 491.
 
 ## How we work
 
