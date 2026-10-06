@@ -3,11 +3,11 @@
 - **Course:** CPSC 490 Undergraduate Seminar, Fall 2026 (proposal + prototype
   semester; full implementation happens in CPSC 491).
 - **Team:** Group 4 Epic Engineers — members in `README.md`.
-- **Project:** A self-hosted platform that ingests logs from your servers and home network, uses ML to spot unusual activity, and explains what it found in plain language instead of cryptic alerts — learning what "normal" looks like for your specific network rather than relying on fixed rules that miss anything unfamiliar.
-- **Sponsor:** independent
+- **Project:** Polygon Prediction Market PNL and Trader Profitability Analytics. A profit and loss (PNL) accounting tool for Polymarket that parses on chain trades from SonarX's Polygon blockchain data, matches positions to market resolutions, computes realized and unrealized PNL per wallet, and ranks the most profitable traders by what drives their edge, shown in a dashboard.
+- **Sponsor:** SNX-1 (SonarX)
 - **Source of truth:** `proposal/proposal.md`. Specs in `docs/specs/`,
   designs in `docs/design/`, proof-of-concept code in `prototype/`.
-- **Stack (prototype):** Python, FastAPI, PostgreSQL, PyTorch, Fluent Bit (log ingestion), Chart.js/Jinja2
+- **Stack (prototype):** data source is SonarX's Polygon blockchain data (Polymarket trades and market resolutions). Languages, frameworks, and services are not chosen yet; the team records them here and in proposal §4 once decided. Do not assume a stack.
 
 ## How we work
 
@@ -61,7 +61,7 @@ alternatives and trade-off analyses.
 
 - Markdown documents, one topic per file; every doc's first lines name its
   epic and stories (`> Epic: #1 · Stories: #2, #4`).
-- Branches: `issue-number>-short-slug` (e.g. `12-login-spec`).
+- Branches: `<issue-number>-short-slug` (e.g. `12-login-spec`).
 - Commit subject: imperative, under ~72 chars; body explains *why*.
 - Disclose AI use in each PR (see `.github/PULL_REQUEST_TEMPLATE.md`) and in
   the proposal's **AI Usage** section.
