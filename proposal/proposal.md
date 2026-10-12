@@ -1,147 +1,37 @@
-# Project Proposal — 〈Project Title〉
+# Project Proposal — Polygon Prediction Market PNL and Trader Profitability Analytics
 
-**Department of Computer Science**
-**CPSC 490 Undergraduate Seminar in Computer Science — Proposal for Capstone Project**
+Department of Computer Science
+CPSC 490 Undergraduate Seminar in Computer Science — Proposal for Capstone Project
 
-**Group 〈N〉 — 〈Group Name〉** · Sponsor: 〈RTX-3 / EL-1 / SNX-n / independent〉
-Authors: 〈Last, First (GitHub username)〉, 〈…〉
-Date: 〈YYYY-MM-DD〉
+**Group 04** — Epic Engineers · **Sponsor** — SonarX  
+**Authors:** Orozco, Bryan (Bryancostco); Cox, Justin (github-username); De Belen, Leila (leiladb); Quach, Kyle (github-username);  
+**Proposal Date:** 2026-11-29  
 
-> **This file is the proposal document, not a README.** Its section numbers,
-> titles, and guidance are copied from the course Word template, so it
-> converts cleanly for Canvas submission. Write continuous academic prose —
-> no task lists, no emoji, no repo jargon.
->
-> Each section below opens with the template's own guidance in a quote block.
-> **Delete the quote blocks and every 〈bracket〉 before submitting.**
->
-> **Getting this into the Word template for Canvas.** The template numbers
-> its headings **automatically** (a multilevel list: top-level sections at
-> level 1, *Related Work* and *Problem Statements* at level 2). The numbers
-> typed below exist so the repo copy is readable and checkable — so when you
-> move the text into Word, do not end up with both sets.
->
-> The reliable route, and the one most teams should use: **open the course
-> template and paste your prose section by section**, leaving Word's own
-> numbering to do the numbering. Ten minutes, no surprises.
->
-> If you prefer to convert, `pandoc` can do it (install with
-> `winget install pandoc`):
->
->     pandoc proposal/proposal.md -o proposal.docx --reference-doc="CPSC 490 Project Proposal Template Fall 2026.docx"
->
-> Then in Word: delete the typed `0.` / `1.` / `1.1` prefixes (Word re-adds
-> them from the list), and set *Related Work* and *Problem Statements* to the
-> template's level-2 heading so they number as 1.1 and 1.2. Check figure
-> placement, then submit.
->
-> **Formatting requirements — the submitted Word document is graded against
-> these, explicitly:**
->
-> - **Cover page: use the template's cover page, unchanged in layout.** Fill
->   in only its fields — project title, group number and name, sponsor,
->   authors, date — and keep the template's own placement, fonts and spacing
->   for it. The header block at the top of this file carries the same fields
->   so the paste is a transcription, not a redesign.
-> - **Font: Times New Roman, 11-point.** Body text, headings and captions
->   take their size and style from the template's own styles — do not
->   restyle anything by hand.
-> - **Line spacing: 1.5.** **Margins: 1.0 inch** on all four sides.
-> - **Section format, numbering and indentation must match the Word template
->   exactly** — the multilevel-list numbering, heading levels, and paragraph
->   indentation are the template's, not yours. If your document's §1.1 looks
->   different from the template's §1.1, fix yours.
-> - **Length: the Final Project Proposal Paper (due Sun Dec 20) must exceed
->   50 pages** under exactly this formatting — font, spacing and margins are
->   fixed above precisely so page count means the same thing for every team.
->   The Preview paper (due Sun Nov 29) is the same document part-way; it has
->   no minimum, but it is graded on the same formatting.
->
-> A paste into the template inherits all of this automatically **if you paste
-> as text and let Word's styles apply** (Home → Paste → *Keep Text Only*, or
-> apply the template's styles after pasting). A pandoc conversion with
-> `--reference-doc` inherits it too — but verify font, spacing and margins
-> afterward rather than assuming.
->
-> Either way, keep this Markdown copy current — it is what peer review and CI
-> can actually read. If your team writes in Word instead, commit the `.docx`
-> here as well.
+## 0. Abstract  
+Polymarket generates large amounts of on-chain trading activity based on real-world events. However, Polymarket’s raw blockchain data is not able to account for profits and losses. In this project, we will use SonarX’s Polygon blockchain data to build a profit and loss (PNL) accounting tool for Polymarket. We will parse on-chain trades, match positions to resolutions, and compute the realized and unrealized PNL for each wallet. We will then rank the top traders and see what drives their edge. The final deliverable will be a working dashboard that showcases these top traders and trading patterns. The sections below will cover the problems, our goals to fix them, the outcome of our project, and our timeline. This project is significant because by doing this we are addressing the issue of raw data not being able to represent profits and losses, as well as discovering the drive behind successful traders. 	
 
----
+## 1. Introduction  
+Our project will be a tool used for Polymarket. Polymarket is a real-world events-based prediction market platform where users trade the outcomes of events [1]. This market is not structured as typical gambling because instead of betting against a house, a user will trade contracts with other users, which determines if they profit off of their contracts [1]. The system of Polymarket works off “Yes”, if they think this event will happen, and “No”, if they think it will not [1]. Users profit a dollar for every correct bid minus how much they already paid for the contract, though they lose the money they paid if incorrect [1]. For example if a user thinks an event will happen, they will put in a buy for $0.70. Another user will then sell them the “Yes” for $0.70 for certain reasons, one potentially being because they do not think it will happen. If the first user is correct, they gain $0.30, but lose $0.70 if the event does not happen.  
 
-## 0. Abstract
+Our project is using SonarX's Polygon blockchain data to build a profit and loss accounting tool for Polymarket. Polygon is “a global network of aggregated blockchains” [2]. Polygon is a network that Polymarket is built upon because anyone with internet can participate, users can control their own funds, all activity done is publicly verifiable onchain, and it enables quick, low-cost transactions [3]. 
 
-> The primary purpose of abstract is to help the reader understand the main
-> message of current document (proposal in this case) without reading the
-> entire document. Therefore an abstract should include at least one or two
-> paragraph of background (or motivation) information for the project, a
-> brief description of the problem you are trying to solve in this proposal,
-> a proposed ideas or solutions, the significance of your proposed idea
-> elaborating why the proposed idea is non-trivial, significant, or
-> beneficial in one or two paragraphs, the project goals and outcomes in one
-> paragraph, and a brief description of what you will discuss in this
-> proposal, giving a brief outline of this document in 1-2 sentences in one
-> paragraph. Abstract should not exceed one page. Any abstract exceeded
-> one-page limit must be shortened.
-
-〈Your abstract. Write it last.〉
-
-## 1. Introduction
-
-> Describe the necessary background on the project field to help the reader
-> understand the field. Assume the reader has B.S. degree in computer science
-> but not necessary knowledgeable in the selected area. You may also briefly
-> describe motivation of the project if any.
->
-> Specify the problem identified and to be solved in this project, the
-> importance or usefulness of the problem solving or project. Further
-> describes what makes your proposal different from existing ones.
-
-〈Your introduction.〉
+One problem we encounter when building this project is Polymarket’s blockchain data displays a trader’s wallet transactions, but it does not explain how there is profit and loss. The second problem is that our competitors show who is profiting the most, but not the drive behind traders. The importance of solving these problems is that we are able to understand how there is profit and loss, which is better for understanding the ranking of traders. It is also important that we are able to learn what drives traders, as that is the key to discovering their success. Our proposal is different than existing projects because we will be focusing on an industrial standpoint of the Polymarket. 
 
 ### 1.1 Related Work
-
-> Describe the related or existing work in detail. This section is like a
-> survey on the selected problem or topic.
-
-〈Your survey. Cite with bracketed numbers matching §8 — every reference must
-be a source your team has actually read.〉
-
-**Do a comparative analysis, not a list of summaries.** Find the existing
-ideas, products, papers, or tools that attack the same problem and compare
-them against each other on the dimensions that matter for your project, with
-honest pros and cons. Then say plainly what your project does differently and
-why that difference is worth the effort.
-
 | Existing approach | What it does | Pros | Cons | Why ours differs |
 |---|---|---|---|---|
-| 〈product / paper [1]〉 | 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 |
-| 〈product / paper [2]〉 | 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 |
-| 〈product / paper [3]〉 | 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 |
+| Polymarket Analytics  |“Real-time analytics for Polymarket prediction markets. Track whale wallets and insider-sized trades, follow the traders with the best P&L, pull historical price data on any market, and see open interest and volume across every event” [4].  | Has a whale tracker that allows people to see large trades, and allows them to understand its positioning, and detects unusual activity [4]. People can look up other user’s positions and their own portfolio [4]. Market data is updated regularly [4].  | “The data is pulled from third-party APIs and blockchain sources”, meaning data can be delayed or not completely accurate. Tracking the whale wallets does not guarantee users land a successful trade as well [4].   | *Will discover after meeting with mentor  |
+| Predicts.guru  | “Predicts.guru provides free wallet analytics based on public Polymarket trading data. Review profit and loss, win rate, markets traded, and open positions” [5]. | Users can use website for free with no sign-up needed [5]. Users can compare wallets side-by-side for easier access [5].  | “Only public Polymarket activity is covered. A trader using several addresses appears as separate wallets, transfers between addresses are not linked, and trading on other venues is out of scope” [5].  | *Will discover after meeting with mentor  |
+| Polycopy   | “Mirror traders and strategies on the best copy trading platform for Polymarket” [6].  | No experience is needed, which is useful for first time users of Polymarket [6]. Has bots to make it easier to copy traders, and strategies [6]. Also has paper bots to stimulate trade [6].  | If the bot is mirroring a trader that is losing money, the user will also lose money [6]. | *Will discover after meeting with mentor  |
+| Polytrackhq.app  | “The #1 Polymarket whale tracker. Follow smart money traders with proven 60%+ win rates. Real-time wallet tracking, P&L analytics, and instant alerts when whales make moves” [7]. | Allows for whale tracking and the ability to mirror traders on the same platform [7]. Users are able to monitor the market  in real time [7]. | Mirroring successful traders does not guarantee users make a profit [7]. Users are dependent on trades of other Polymarket users [7].  | *Will discover after meeting with mentor  |
 
-〈Discuss the table in prose — the table is evidence, the paragraph is the
-argument. "Nothing like this exists" is almost never true and reads as a
-missing survey; if a close competitor exists, say so and explain why you are
-still building this.〉
+While there are many competitors, and some recognized in the table above, our project wants to use a more industrial take on Polymarket, rather than only a bot-trading tool. The first two projects in the table analyze the wallets of top traders, while the other competitors focus on users using bot trading. When reviewing the table, it is clear that our project will be achieving the same goal of those that already exist, which is wallet lookup. But, with the websites that are already made, and the raw data from Polymarket, their data will help our PNL tool compute and explain the wallets that already exist to allow users to understand the wallets being traded, the profits and losses that are open and closed, and what drives the successful traders. As projects cited as [4] and [7] in the table above demonstrate, there is a common theme present within their advantages which is they review whale trading, to which our tool would be built to excel in documenting. When reviewing the table of the cons of projects cited [6] and [7], we see that users depend on bots and mirroring. Our project would be used to help users read the raw trade data easily with our dashboard, allowing users to understand the current state of the wallets and how profits and losses happen to traders in Polymarket. 
 
 ### 1.2 Problem Statements
-
-> Briefly state the problem to solve in this project.
-
-〈Your problem statement(s), **concise** — a few sentences each, no
-background (that was §1) and no solution (that is §3). Number them P1, P2, …
-so later sections can refer back.〉
-
-**Every problem here must connect to the goals and objectives in §2, and
-every goal in §2 must trace back to a problem here.** A goal with no problem
-behind it is scope you invented; a problem with no goal is a problem you are
-not actually solving. Check both directions before you submit — this mapping
-is what the final project report is graded against.
-
-| Problem | Addressed by |
+| Existing approach | What it does |
 |---|---|
-| P1 〈one line〉 | 〈Goal 1 (#n)〉 |
-| P2 〈one line〉 | 〈Goal 2 (#n)〉 |
+| P1 - Polymarket’s blockchain data displays a trader’s wallet transactions, but it does not explain how there is profit and loss. | *goal will be put here later  |
+| P2 - Our competitors show who is profiting the most, but not the drive behind traders.  | *goal will be put here later  |
 
 ## 2. Goals and Objectives
 
