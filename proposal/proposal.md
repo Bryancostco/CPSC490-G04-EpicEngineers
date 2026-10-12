@@ -116,29 +116,6 @@ The goals and objectives are listed in §2 as epics and user stories. The table 
 | [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41 "Write §2 Goals and Objectives and §4 work item links into proposal.md") | task | Write §2 Goals and Objectives and §4 work item links into proposal.md | none (writing task) | Bryan Orozco | Sprint 1 |
 | [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42 "Write the Sprint 1 review") | task | Write the Sprint 1 review | none (writing task) | Bryan Orozco | Sprint 1 |
 
-## 4. Other Work Items
-
-The following work items are tracked in the same GitHub repository but are not epics or user stories.
-
-### Tasks
-
-| Reference | Title | Status |
-|---|---|---|
-| [[task:#1]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/1) | Replace course setup guide README with team README template | Closed |
-| [[task:#3]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/3) | Fill in team README.md and CLAUDE.md | Closed |
-| [[task:#10]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/10) | README and CLAUDE.md | Closed |
-| [[task:#11]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/11) | Fill proposal cover page and draft §1 Introduction: background | Closed |
-| [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20) | SNX-1 Kickoff Meeting Notes (Oct 6, 2026) | Closed |
-| [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41) | Write §2 Goals and Objectives and §4 work item links into proposal.md | Open |
-| [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42) | Write the Sprint 1 review (docs/sprint-reviews/sprint-1.md) | Open |
-
-### Sub-tasks
-
-| Reference | Title | Status |
-|---|---|---|
-| [[sub-task:#12]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/12) | Research: how prediction markets and Polymarket work | Closed |
-| [[sub-task:#13]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/13) | Research: existing Polymarket PNL and leaderboard tools | Closed |
-
 ## 5. Project Outcomes
 
 > Describe the outcomes or deliverables, e.g., final project report, user
