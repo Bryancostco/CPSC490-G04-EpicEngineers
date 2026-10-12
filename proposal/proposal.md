@@ -24,7 +24,7 @@ One problem we encounter when building this project is that Polymarket’s block
 |---|---|---|---|---|
 | Polymarket Analytics  |“Real-time analytics for Polymarket prediction markets. Track whale wallets and insider-sized trades, follow the traders with the best P&L, pull historical price data on any market, and see open interest and volume across every event” [4].  | Has a whale tracker that allows people to see large trades, and allows them to understand its positioning, and detects unusual activity [4]. People can look up other user’s positions and their own portfolio [4]. Market data is updated regularly [4].  | “The data is pulled from third-party APIs and blockchain sources”, meaning data can be delayed or not completely accurate. Tracking the whale wallets does not guarantee users land a successful trade as well [4].   | *Will discover after meeting with mentor  |
 | Predicts.guru  | “Predicts.guru provides free wallet analytics based on public Polymarket trading data. Review profit and loss, win rate, markets traded, and open positions” [5]. | Users can use website for free with no sign-up needed [5]. Users can compare wallets side-by-side for easier access [5].  | “Only public Polymarket activity is covered. A trader using several addresses appears as separate wallets, transfers between addresses are not linked, and trading on other venues is out of scope” [5].  | *Will discover after meeting with mentor  |
-| Polycopy   | “Mirror traders and strategies on the best copy trading platform for Polymarket” [6].  | No experience is needed, which is useful for first time users of Polymarket [6]. Has bots to make it easier to copy traders, and strategies [6]. Also has paper bots to stimulate trade [6].  | If the bot is mirroring a trader that is losing money, the user will also lose money [6]. | *Will discover after meeting with mentor  |
+| Polycopy   | “Mirror traders and strategies on the best copy trading platform for Polymarket” [6].  | No experience is needed, which is useful for first time users of Polymarket [6]. Has bots to make it easier to copy traders, and strategies [6]. Also has paper bots to simulate trade [6].  | If the bot is mirroring a trader that is losing money, the user will also lose money [6]. | *Will discover after meeting with mentor  |
 | Polytrackhq.app  | “The #1 Polymarket whale tracker. Follow smart money traders with proven 60%+ win rates. Real-time wallet tracking, P&L analytics, and instant alerts when whales make moves” [7]. | Allows for whale tracking and the ability to mirror traders on the same platform [7]. Users are able to monitor the market  in real time [7]. | Mirroring successful traders does not guarantee users make a profit [7]. Users are dependent on trades of other Polymarket users [7].  | *Will discover after meeting with mentor  |
 
 While there are many competitors, and some recognized in the table above, our project wants to use a more industrial take on Polymarket, rather than only a bot-trading tool. The first two projects in the table analyze the wallets of top traders, while the other competitors focus on users using bot trading. When reviewing the table, it is clear that our project will be achieving the same goal of those that already exist, which is wallet lookup. But, with the websites that are already made, and the raw data from Polymarket, their data will help our PNL tool compute and explain the wallets that already exist to allow users to understand the wallets being traded, the profits and losses that are open and closed, and what drives the successful traders. As projects cited as [4] and [7] in the table above demonstrate, there is a common theme present within their advantages which is they review whale trading, to which our tool would be built to excel in documenting. When reviewing the table of the cons of projects cited [6] and [7], we see that users depend on bots and mirroring. Our project would be used to help users read the raw trade data easily with our dashboard, allowing users to understand the current state of the wallets and how profits and losses happen to traders in Polymarket. 
@@ -35,7 +35,7 @@ While there are many competitors, and some recognized in the table above, our pr
 | P1 - Polymarket’s blockchain data displays a trader’s wallet transactions, but it does not explain how there is profit and loss. | Goal 1 |
 | P2 - Our competitors show who is profiting the most, but not the drive behind traders.  | Goal 2 |
 | P3 - SonarX needs to visualize trader PNL for potential clients. | Goal 3 |
-| P4 - Competitors of SonarX are building similar dashboards, we want SonarX to stay competetive.  | Goal 1,2,3 |
+| P4 - Competitors of SonarX are building similar dashboards, we want SonarX to stay competitive.  | Goal 1,2,3 |
 
 ## 2. Goals and Objectives
 
@@ -115,6 +115,29 @@ The goals and objectives are listed in §2 as epics and user stories. The table 
 | [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20 "SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026)") | task | SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026) | none (meeting) | Team | Sprint 1 |
 | [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41 "Write §2 Goals and Objectives and §4 work item links into proposal.md") | task | Write §2 Goals and Objectives and §4 work item links into proposal.md | none (writing task) | Bryan Orozco | Sprint 1 |
 | [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42 "Write the Sprint 1 review") | task | Write the Sprint 1 review | none (writing task) | Bryan Orozco | Sprint 1 |
+
+## 4. Other Work Items
+
+The following work items are tracked in the same GitHub repository but are not epics or user stories.
+
+### Tasks
+
+| Reference | Title | Status |
+|---|---|---|
+| [[task:#1]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/1) | Replace course setup guide README with team README template | Closed |
+| [[task:#3]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/3) | Fill in team README.md and CLAUDE.md | Closed |
+| [[task:#10]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/10) | README and CLAUDE.md | Closed |
+| [[task:#11]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/11) | Fill proposal cover page and draft §1 Introduction: background | Closed |
+| [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20) | SNX-1 Kickoff Meeting Notes (Oct 6, 2026) | Closed |
+| [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41) | Write §2 Goals and Objectives and §4 work item links into proposal.md | Open |
+| [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42) | Write the Sprint 1 review (docs/sprint-reviews/sprint-1.md) | Open |
+
+### Sub-tasks
+
+| Reference | Title | Status |
+|---|---|---|
+| [[sub-task:#12]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/12) | Research: how prediction markets and Polymarket work | Closed |
+| [[sub-task:#13]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/13) | Research: existing Polymarket PNL and leaderboard tools | Closed |
 
 ## 5. Project Outcomes
 
