@@ -28,50 +28,44 @@ One problem we encounter when building this project is Polymarket’s blockchain
 While there are many competitors, and some recognized in the table above, our project wants to use a more industrial take on Polymarket, rather than only a bot-trading tool. The first two projects in the table analyze the wallets of top traders, while the other competitors focus on users using bot trading. When reviewing the table, it is clear that our project will be achieving the same goal of those that already exist, which is wallet lookup. But, with the websites that are already made, and the raw data from Polymarket, their data will help our PNL tool compute and explain the wallets that already exist to allow users to understand the wallets being traded, the profits and losses that are open and closed, and what drives the successful traders. As projects cited as [4] and [7] in the table above demonstrate, there is a common theme present within their advantages which is they review whale trading, to which our tool would be built to excel in documenting. When reviewing the table of the cons of projects cited [6] and [7], we see that users depend on bots and mirroring. Our project would be used to help users read the raw trade data easily with our dashboard, allowing users to understand the current state of the wallets and how profits and losses happen to traders in Polymarket. 
 
 ### 1.2 Problem Statements
-| Existing approach | What it does |
+| Problem | Addressed by |
 |---|---|
-| P1 - Polymarket’s blockchain data displays a trader’s wallet transactions, but it does not explain how there is profit and loss. | *goal will be put here later  |
-| P2 - Our competitors show who is profiting the most, but not the drive behind traders.  | *goal will be put here later  |
+| P1 - Polymarket’s blockchain data displays a trader’s wallet transactions, but it does not explain how there is profit and loss. | Goal 1 |
+| P2 - Our competitors show who is profiting the most, but not the drive behind traders.  | Goal 2 |
 
 ## 2. Goals and Objectives
 
-> Describe goals and objectives. Goals are general statements of what you are
-> trying to accomplish with the project or problems to solve. Objectives are
-> specific, measurable statements of what you want to complete to reach the
-> project goals. Most projects have 2-3 goals.
->
-> List the objectives for each goal. To write objectives, look at the goal
-> statement and list what you need to complete using action words like use
-> case names in order to meet the goal.
->
-> Note that the goals and objectives in a proposal will be an important
-> metric to evaluate whether or not you successfully finished your project
-> when you turn in your final project report.
+We have determined three goals for our project. All relate to the issues discussed in the introduction. Our goals also correspond to the discussion we had at the initial meeting with SonarX. Phase 1 of our project deals with calculating the profit and loss of each proxy wallet using historical data. Phase 2 associates proxy wallets with their owner (EOA) wallets and uses real time data. We will leave Phase 2 as future work. Each goal is listed as an epic in the GitHub repository used by our team, and each objective is listed as a user story in the same repository.
 
-Each **goal** is tracked as an **Epic** issue and each **objective** as a
-**User Story** issue in the team repository (see the setup guide's *Epics and user stories* section).
-**Every epic and user story in the repository is linked from this section** —
-CI gate G8 fails if one exists that this section does not link. That is what
-keeps the goals in this document and the work on the board from drifting
-apart.
+**Goal 1: Compute the profit and loss of each Polymarket proxy wallet** [[epic:#24]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/24 "Goal 1: Compute the profit and loss of each Polymarket proxy wallet")
 
-Write each objective the way the guidance above asks — **an action word plus
-the measure that says it is done**, not a role-play sentence:
+Objective 1.1: Collect all Polymarket market resolutions and trades from SonarX's Polygon blockchain data stored in Snowflake over a historical period agreed upon with SonarX. [[story:#25]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/25 "Objective 1.1: Collect all Polymarket market resolutions and trades from SonarX's Polygon blockchain data stored in Snowflake over a historical period agreed upon with SonarX")
 
-- **Goal 1: 〈e.g. Secure account management〉** (Epic #〈n〉)
-  - Objective 1.1: 〈Implement member registration and login with hashed
-    credentials, session expiry, and rejection of malformed input.〉 (#〈n〉)
-  - Objective 1.2: 〈Demonstrate the login round-trip in a runnable prototype
-    at the Week-8 in-class check.〉 (#〈n〉)
-- **Goal 2: 〈your second goal〉** (Epic #〈n〉)
-  - Objective 2.1: 〈Action word + what you will complete + how it will be
-    measured〉 (#〈n〉)
+Objective 1.2: Associate each wallet's transactions with their market resolution in order to determine whether each position is open or closed. [[story:#26]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/26 "Objective 1.2: Associate each wallet's transactions with their market resolution in order to determine whether each position is open or closed")
 
-〈Replace the brackets with your own 2–3 goals and their objectives, and put
-the **real issue numbers** in as you file them — gate G8 checks that every
-epic and story in your repository is linked from this section. A fully worked
-version of this, with live issues and a populated board, is in the course
-example repository.〉
+Objective 1.3: Compute the realized PNL for closed positions and the unrealized PNL for open positions for each proxy wallet. [[story:#27]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/27 "Objective 1.3: Compute the realized PNL for closed positions and the unrealized PNL for open positions for each proxy wallet")
+
+Objective 1.4: Test the accuracy of the computed PNL by comparing a sample of at least 25 wallets, including both highly profitable and ordinary wallets, to data from Predicts.guru and Polymarket Analytics and note any discrepancies. [[story:#28]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/28 "Objective 1.4: Test the accuracy of the computed PNL by comparing a sample of at least 25 wallets, including both highly profitable and ordinary wallets, to data from Predicts.guru and Polymarket Analytics and note any discrepancies")
+
+**Goal 2: Determine the most profitable traders and the factors that contribute to that profitability** [[epic:#29]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/29 "Goal 2: Determine the most profitable traders and the factors that contribute to that profitability")
+
+Objective 2.1: Compute the PNL and return on investment for each proxy wallet and produce a leaderboard of the most profitable traders. [[story:#30]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/30 "Objective 2.1: Compute the PNL and return on investment for each proxy wallet and produce a leaderboard of the most profitable traders")
+
+Objective 2.2: Analyze the trading behaviors of each ranked wallet, including win rate, average entry price, market categories traded, and position holding period. [[story:#31]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/31 "Objective 2.2: Analyze the trading behaviors of each ranked wallet, including win rate, average entry price, market categories traded, and position holding period")
+
+Objective 2.3: Determine how the top 100 traders differ from the remaining wallets by comparing their trading behaviors to all other wallets, and note at least three observations regarding the differences between profitable and unprofitable traders. [[story:#32]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/32 "Objective 2.3: Determine how the top 100 traders differ from the remaining wallets by comparing their trading behaviors to all other wallets, and note at least three observations regarding the differences between profitable and unprofitable traders")
+
+**Goal 3: Create a client-facing dashboard that allows for an easy interpretation of PNL data** [[epic:#33]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/33 "Goal 3: Create a client-facing dashboard that allows for an easy interpretation of PNL data")
+
+Objective 3.1: Determine a list of questions that SonarX clients would like answered by the dashboard, and have this list approved by our SonarX mentor, prior to creating any aspect of the dashboard. [[story:#34]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/34 "Objective 3.1: Determine a list of questions that SonarX clients would like answered by the dashboard, and have this list approved by our SonarX mentor, prior to creating any aspect of the dashboard")
+
+Objective 3.2: Create a leaderboard page to display the top traders and allow filtering and sorting of these traders. [[story:#35]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/35 "Objective 3.2: Create a leaderboard page to display the top traders and allow filtering and sorting of these traders")
+
+Objective 3.3: Create a wallet lookup page to display a wallet's open and closed positions, realized and unrealized PNL, and trading behaviors. [[story:#36]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/36 "Objective 3.3: Create a wallet lookup page to display a wallet's open and closed positions, realized and unrealized PNL, and trading behaviors")
+
+Objective 3.4: Create a fast dashboard where all pages load in under 3 seconds on our demo data. [[story:#37]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/37 "Objective 3.4: Create a fast dashboard where all pages load in under 3 seconds on our demo data")
+
+Objective 3.5: Show a functional version of our dashboard to SonarX and note their feedback. [[story:#38]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/38 "Objective 3.5: Show a functional version of our dashboard to SonarX and note their feedback")
 
 ## 3. Proposed Approaches
 
@@ -96,64 +90,27 @@ trade-off each. If it runs past a page, you are writing §4.〉
 
 ## 4. Required Environment, Resources, and Planned Activities
 
-> Review the required and available resources and environment to complete
-> your project. For example, server, platform, software tools, operating
-> systems, DBMS, or any required skills.
->
-> Describe the expected activities to achieve the stated goals, e.g.,
-> software development process.
-
-〈Your environment, resources, and planned activities.〉
-
-**Diagrams belong in this section.** Include at minimum a high-level
-architecture diagram and a system (context) diagram; add the ER/EER model and
-a data-flow diagram where they help the reader understand what you are
-building and what it depends on. Draw them with any graphical tool
-(Lucidchart, draw.io, Miro, Mermaid, ERDPlus, Figma), keep the authoritative
-copies in `docs/design/` with both editable source and exported image, and
-reference them here.
-
-〈Number every figure, caption it, and point at it from the prose — "Figure 1
-shows the three deployment tiers and the trust boundary between them." A
-figure the text never mentions is decoration. See `docs/design/DIAGRAMS.md`
-for tools, conventions, and the rule that every box and arrow must be
-verified against reality.〉
+Our project will run its queries on Snowflake, which is the main warehouse SonarX uses for its Polygon blockchain data, as confirmed at our kickoff meeting with SonarX. SonarX allows us to use open source tools and libraries. The languages, frameworks, and services for the PNL pipeline and the dashboard have not been chosen yet. We will record them in this section once the team decides, along with a high level architecture diagram and a system context diagram kept in `docs/design/`.
 
 ### Specification and design documents
 
-**Every specification and design document the team writes is listed here**
-with the objective it serves. This section is the index of the project's
-technical detail: §3 holds the argument, §4 holds the documents that make it
-buildable. CI gate G9 fails if a document exists in `docs/specs/` or
-`docs/design/` that this section does not link.
-
-| Document | Kind | Covers | Issues |
-|---|---|---|---|
-| 〈docs/specs/account-management.md〉 | specification | 〈account management requirements〉 | 〈#n, #n〉 |
-| 〈docs/design/architecture.md〉 | design | 〈system architecture + data model〉 | 〈#n〉 |
-
-〈The scaffold ships `docs/specs/example-spec.md` and
-`docs/design/example-design.md` as worked examples — read them, then delete
-them once you have your own, and list yours here.〉
-
-〈Replace these rows with your own. Each document names its epic and stories
-in its own first lines too (gate G2), so the trail runs both ways.〉
+No specification or design documents have been written yet. Each one will be listed here with the objective it serves as it is added to `docs/specs/` or `docs/design/`.
 
 ### Planned activities — the work items
 
-The goals and objectives live in §2 as epics and user stories. **This section
-links every *other* work item: features, enhancements, bugs, tasks, and
-sub-tasks** — the concrete activities that deliver those objectives. CI gate
-G8 fails if such an issue exists that this section does not link.
+The goals and objectives are listed in §2 as epics and user stories. The table below lists every other work item, the activities that support those objectives and the proposal itself.
 
 | Issue | Type | Activity | Parent | Owner | Sprint |
 |---|---|---|---|---|---|
-| 〈#n〉 | 〈task〉 | 〈stand up the prototype login endpoint〉 | 〈#story〉 | 〈owner〉 | 〈Sprint 1〉 |
-| 〈#n〉 | 〈feature/enhancement/bug/task/sub-task〉 | 〈…〉 | 〈#story〉 | 〈…〉 | 〈…〉 |
-
-〈Replace these rows with your own, and keep the table current as you file new
-issues — with §2 it gives a reader every planned activity in one place, each
-traceable to the objective it serves.〉
+| [[task:#1]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/1 "Replace the course setup guide README with the team README template") | task | Replace the course setup guide README with the team README template | none (writing task) | Justin Cox | Sprint 1 |
+| [[task:#3]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/3 "Fill in team README.md and CLAUDE.md") | task | Fill in team README.md and CLAUDE.md | none (writing task) | Justin Cox | Sprint 1 |
+| [[task:#10]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/10 "README and CLAUDE.md updated with the SNX-1 project details") | task | README and CLAUDE.md updated with the SNX-1 project details | none (writing task) | Bryan Orozco | Sprint 1 |
+| [[task:#11]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/11 "Fill the proposal cover page and draft §1 Introduction background") | task | Fill the proposal cover page and draft §1 Introduction background | none (writing task) | Leila De Belen | Sprint 1 |
+| [[sub-task:#12]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/12 "Research how prediction markets and Polymarket work") | sub-task | Research how prediction markets and Polymarket work | #11 | Kyle Quach | Sprint 1 |
+| [[sub-task:#13]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/13 "Research existing Polymarket PNL and leaderboard tools") | sub-task | Research existing Polymarket PNL and leaderboard tools | #11 | Justin Cox | Sprint 1 |
+| [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20 "SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026)") | task | SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026) | none (meeting) | Team | Sprint 1 |
+| [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41 "Write §2 Goals and Objectives and §4 work item links into proposal.md") | task | Write §2 Goals and Objectives and §4 work item links into proposal.md | none (writing task) | Bryan Orozco | Sprint 1 |
+| [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42 "Write the Sprint 1 review") | task | Write the Sprint 1 review | none (writing task) | Bryan Orozco | Sprint 1 |
 
 ## 5. Project Outcomes
 
