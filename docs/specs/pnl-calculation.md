@@ -58,6 +58,7 @@ mean the same thing.
 | Position | All of one proxy wallet's shares in one outcome token of one market. |
 | Lot | The shares from one buy, with the price per share paid. FIFO consumes lots oldest first. |
 | Cost basis | What the shares still held cost, taken from the lots that remain. |
+| FIFO cost basis | First in, first out: a sale is matched against the oldest lot first, at the price paid for it (FR-6). |
 | Payout per share | What one share of an outcome token is worth once its market resolves, taken from the resolution data. A winning share pays 1.00 and a losing share 0.00 [1]. |
 | Latest price | The price of the most recent trade in an outcome token at or before the as of time. |
 | As of time (T) | The moment the calculation describes. Everything after T is ignored. |
@@ -183,14 +184,14 @@ ahead, which matches.
 
 | Question | Owner | Needed by |
 |---|---|---|
-| Should positions marked incomplete (FR-5) be left out of the leaderboard, shown with a warning, or fixed by loading earlier trades for those wallets only? (ask Erel) | Bryan Orozco | before ranking work in #30 |
-| Do SonarX's Polymarket tables record trading fees per trade? If they do, realized PNL subtracts them; if not, we report PNL before fees and say so. (ask Sergio) | Bryan Orozco | before #27 is implemented |
-| Which table and column give the latest price for an outcome token, and how fresh is it? (ask Sergio) | Bryan Orozco | before #27 is implemented |
-| Besides buys and sells, which events change a wallet's shares in the data (for example splitting collateral into a YES and NO pair, merging a pair back, redeeming after resolution, or transfers between wallets), and how does each appear? Each needs its own requirement before #26 is built. (ask Sergio) | Bryan Orozco | before #26 is implemented |
-| Can a market resolve with a payout per share other than 1.00 or 0.00? FR-11 already reads the payout from the data, so this only changes the test cases. (ask Sergio) | Bryan Orozco | before #27 tests |
-| What tolerance between our PNL and the Polymarket leaderboard counts as a match? Our mentor said to set it together after a first pass. (ask Erel) | Bryan Orozco | before #28 |
+| Q1. Should positions marked incomplete (FR-5) be left out of the leaderboard, shown with a warning, or fixed by loading earlier trades for those wallets only? (ask Erel) | Bryan Orozco | before ranking work in #30 |
+| Q2. Do SonarX's Polymarket tables record trading fees per trade? If they do, realized PNL subtracts them; if not, we report PNL before fees and say so. (ask Sergio) | Bryan Orozco | before #27 is implemented |
+| Q3. Which table and column give the latest price for an outcome token, and how fresh is it? (ask Sergio) | Bryan Orozco | before #27 is implemented |
+| Q4. Besides buys and sells, which events change a wallet's shares in the data (for example splitting collateral into a YES and NO pair, merging a pair back, redeeming after resolution, or transfers between wallets), and how does each appear? Each needs its own requirement before #26 is built. (ask Sergio) | Bryan Orozco | before #26 is implemented |
+| Q5. Can a market resolve with a payout per share other than 1.00 or 0.00? FR-11 already reads the payout from the data, so this only changes the test cases. (ask Sergio) | Bryan Orozco | before #27 tests |
+| Q6. What tolerance between our PNL and the Polymarket leaderboard counts as a match? Our mentor said to set it together after a first pass. (ask Erel) | Bryan Orozco | before #28 |
 
 ## Sources
 
-[1] Polymarket, "Polymarket 101," Polymarket Documentation. Available:
+[1] Polymarket. Polymarket 101. Polymarket Documentation.
 https://docs.polymarket.com/polymarket-101 (accessed Oct. 24, 2026).
