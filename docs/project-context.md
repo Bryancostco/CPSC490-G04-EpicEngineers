@@ -81,8 +81,9 @@ Use these words the same way everywhere. The full definitions are in
   https://docs.polymarket.com/api-reference/boards/get-the-trader-leaderboard
   (accessed Oct. 4, 2026).
 - **Polymarket Analytics, Predicts.guru, Polycopy, Polynyx and PolyWallet**
-  all rank wallets by PNL, and none publishes how its PNL is calculated or
-  explains what drives a trader's edge. That gap is what Goals 1 and 2
+  all rank wallets by PNL. Polynyx says it rebuilds PNL from each wallet's
+  trades but, like the others, does not publish the method, and none of
+  them explains what drives a trader's edge. That gap is what Goals 1 and 2
   address. Links and dates are on #13.
 
 ### Bryan Orozco — mentor answers and scope (#20)
