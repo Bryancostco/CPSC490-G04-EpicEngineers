@@ -14,7 +14,8 @@ because the stack is still being chosen in #52.*
 
 Where our system stops. SonarX's Snowflake warehouse is the only data source
 we have agreed on with SonarX ([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20)),
-and SonarX's clients are the only users of the dashboard.
+and SonarX's clients are the only users of the dashboard. Figure 1 shows
+the system as one process with those two external entities.
 
 ![Level 0 data flow: SonarX Snowflake sends Polymarket trades and market resolutions into the PNL analytics system; a SonarX client sends a time window, wallet and filter choices, and gets back the leaderboard, wallet PNL, positions and trading metrics](diagrams/dfd-level0.png)
 
@@ -22,6 +23,9 @@ and SonarX's clients are the only users of the dashboard.
 Rounded boxes are external entities; process 0.0 is the whole system.*
 
 ## 2. Level 1 (major processes)
+
+Figure 2 breaks process 0.0 into the six pipeline steps and the four data
+stores between them; §3 and §4 describe each one.
 
 ![Level 1 data flow: process 1.0 extracts trades and resolutions from SonarX Snowflake into store D1; 2.0 builds positions and FIFO lots into D2; 3.0 reads resolutions from D1 and positions from D2 and writes open or closed status back to D2; 4.0 reads lots and status from D2 and prices and payouts from D1 and writes PNL to D3; 5.0 reads D3 and closed positions from D2 and writes rankings and metrics to D4; 6.0 reads D2, D3 and D4 and serves the leaderboard and wallet lookup pages to the SonarX client](diagrams/dfd-level1.png)
 
@@ -56,6 +60,8 @@ columns are checked against SonarX's schema documents in the ER diagram
 ## 5. Key decisions
 
 These are proposals for the team to confirm in review of this document.
+The data stores in §4 follow from them, so they are proposals too until the
+team approves this pull request.
 
 | Decision | Options considered | Chosen | Why |
 |---|---|---|---|
