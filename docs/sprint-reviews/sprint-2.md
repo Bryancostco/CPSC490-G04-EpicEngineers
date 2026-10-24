@@ -8,7 +8,7 @@ below is already true.
 
 ## Progress this sprint — the substance
 
-**Proposal moved:**
+**Proposal moved** (pull requests open as of Oct 24; any not merged by Oct 26 move to Carried over):
 | Section | What changed | Where |
 |---|---|---|
 | §4 Planned activities | Every Sprint 2 task (#49 to #63, #65) cited as a typed reference, with its owner | PR #66 (task #65) |
