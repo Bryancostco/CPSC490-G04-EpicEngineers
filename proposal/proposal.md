@@ -168,14 +168,16 @@ what fraction of each artifact was AI-assisted, and how you verified it.〉
 
 ## 8. References
 
-> [1] Burges, C. J. C. Tutorial on Support Vector Machines for Pattern
-> Recognition. Kluwer Academic Publishers, 1998.
-> [2] Chen, P., Fan, R., and Lin, C. A study on SMO-type decomposition
-> methods for support vector machines. IEEE Transactions on Neural Networks,
-> 2006.
-> [3] For Wikipedia, specify the URL here
-> [4] For a web source, specify the URL here plus date accessed
+[1] Polymarket. What is Polymarket. Polymarket Help Center. https://help.polymarket.com/en/articles/13364060-what-is-polymarket (accessed Oct. 4, 2026).
 
-〈Number references in the order first cited and cite them in the text as
-[1], [2]. Every entry must be a source a team member has actually read and
-can produce on request.〉
+[2] Polygon. WTF is Polygon? Polygon Blog, Apr. 4, 2024. https://polygon.technology/blog/wtf-is-polygon (accessed Oct. 24, 2026).
+
+[3] Polymarket. Polymarket 101. Polymarket Documentation. https://docs.polymarket.com/polymarket-101 (accessed Oct. 4, 2026).
+
+[4] Polymarket Analytics. Polymarket Analytics: Prediction Market Data, Analytics and Trader Leaderboard. https://polymarketanalytics.com/ (accessed Oct. 4, 2026).
+
+[5] Predicts.guru. https://www.predicts.guru/ (accessed Oct. 4, 2026).
+
+[6] Polycopy. Polycopy: The Home for Copy Trading on Polymarket. https://polycopy.app/ (accessed Oct. 24, 2026).
+
+[7] PolyTrack. PolyTrack: #1 Polymarket Whale Tracker and Copy Trading Platform. https://polytrackhq.app/ (accessed Oct. 24, 2026).
