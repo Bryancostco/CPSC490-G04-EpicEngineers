@@ -38,7 +38,7 @@ teammate — they point at the rule everyone already agreed to.
 | Missing meetings | Misses 2 team or sprint meetings in one sprint without an acceptable excuse | First time: takes the next sprint review write up. Second time in the semester: the team raises it with the instructor at the sprint meeting |
 | Not contributing code/docs | Fewer than 2 merged pull requests in a sprint (our working agreement in §2) | Named in the sprint review's contribution snapshot with a plan for the next sprint; two sprints in a row means a meeting with the instructor |
 | Work quality | A pull request reopened or sent back twice for the same missed acceptance criterion | Pairs with a teammate on their next story |
-| Not reviewing | Reviews no pull request in a sprint | Takes the next sprint's QA / harness owner role in §1, or the first review of every PR for one week |
+| Not reviewing | Reviews no pull request in a sprint | Does the first review on every pull request opened in the next week |
 | Going dark | No reply in the group chat for 3 days during a sprint | The leader calls or texts; after 5 days, the instructor is told |
 
 ### Quality assurance
@@ -82,8 +82,11 @@ the instructor before it is final.
 
 We use assistants to draft specification and design documents, diagrams,
 prototype code and tests, pull request descriptions, and review comments.
-The proposal's prose is our own writing, as the course template requires;
-an assistant may suggest structure or check it, but does not write it.
+The proposal's argument (the abstract and §1 to §3, §5 and §6) is our own
+writing, as the course template requires; an assistant may suggest
+structure or check it, but does not write it. An assistant may draft the
+short §4 index entries and the §8 reference entries, which the pull
+request's author rewrites or confirms in their own words before merge.
 `CLAUDE.md` and `docs/project-context.md` give every teammate's assistant the
 same starting facts.
 
