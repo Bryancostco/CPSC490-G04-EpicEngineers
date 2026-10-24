@@ -102,6 +102,8 @@ Each specification and design document is listed here with the objectives it ser
 
 The position matching and PNL specification, [`docs/specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), defines how trades become positions, how FIFO cost basis works, when a position is open or closed, and the realized and unrealized PNL formulas, with a worked example computed by hand. It serves Objective 1.2 and Objective 1.3. [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)")
 
+The data flow design, [`docs/design/data-flow.md`](../docs/design/data-flow.md), shows how data moves from SonarX's Snowflake tables through position matching, PNL, ranking and metrics to the dashboard, as a Level 0 context diagram and a Level 1 diagram whose processes are numbered to match the specification. It serves Objectives 1.1 to 1.3, 2.1, 2.2, 3.2 and 3.3. [[task:#58]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/58 "Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams")
+
 ### Planned activities — the work items
 
 The goals and objectives are listed in §2 as epics and user stories. The table below lists every other work item, the activities that support those objectives and the proposal itself.
