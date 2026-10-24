@@ -98,7 +98,9 @@ Our project will run its queries on Snowflake, which is the main warehouse Sonar
 
 ### Specification and design documents
 
-No specification or design documents have been written yet. Each one will be listed here with the objective it serves as it is added to `docs/specs/` or `docs/design/`.
+Each specification and design document is listed here with the objectives it serves, as it is added to `docs/specs/` or `docs/design/`.
+
+The position matching and PNL specification, [`docs/specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), defines how trades become positions, how FIFO cost basis works, when a position is open or closed, and the realized and unrealized PNL formulas, with a worked example computed by hand. It serves Objective 1.2 and Objective 1.3. [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)")
 
 ### Planned activities — the work items
 
