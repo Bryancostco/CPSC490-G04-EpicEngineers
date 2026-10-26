@@ -1,7 +1,10 @@
-
-
+Epic: #24, #29, #33 · Stories: Writing Documentation for Architecture
 ```mermaid 
 flowchart TB
+%% High-Level Archiecture Diagram: Figure 1. Data Flow Visualization
+
+
+
     subgraph architecture ["High-level architecture"]
         direction LR
         DB[("Snow Flake Database")]
@@ -13,6 +16,10 @@ flowchart TB
         Analysis -->|Produces| Results
         Results -->|Visualized in| Dashboard
     end
+
+
+
+%% System Context Diagram: Figure 2. Dashboard user workflow, display of dashboard
 
     subgraph context ["System context"]
         direction LR
