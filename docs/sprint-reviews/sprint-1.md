@@ -83,10 +83,10 @@ None this sprint. See "Prototype moved" above.
 
 | Member | Meetings attended | Merged PRs | Issues closed | Reviews given |
 |---|---|---|---|---|
-| @Bryancostco | team to fill in | 7 (#9, #16, #19, #39, #40, #43, #44) | 2 | 6 |
-| @justincox8 | team to fill in | 2 (#6, #45) | 3 | 2 |
-| @leiladb | team to fill in | 1 (#21) | 1 | 5 |
-| @kyquach | team to fill in | 0 | 1 | 1 |
+| @Bryancostco | 1 | 7 (#9, #16, #19, #39, #40, #43, #44) | 2 | 6 |
+| @justincox8 | 1 | 2 (#6, #45) | 3 | 2 |
+| @leiladb | 1 | 1 (#21) | 1 | 5 |
+| @kyquach | 0 | 0 | 1 | 1 |
 
 Merged PRs, issues closed, and reviews count Sprint 1 only (Sep 29 to Oct 12) and come from the repository. Meetings attended is for the team to fill in.
 
