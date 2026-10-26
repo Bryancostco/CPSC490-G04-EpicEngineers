@@ -102,6 +102,8 @@ Each specification and design document is listed here with the objectives it ser
 
 The position matching and PNL specification, [`docs/specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), defines how trades become positions, how FIFO cost basis works, when a position is open or closed, and the realized and unrealized PNL formulas, with a worked example computed by hand. It serves Objective 1.2 and Objective 1.3. [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)")
 
+The prototype implementation and module diagram, [`docs/design/implementation.md`](../docs/design/implementation.md), displays how our prototype directory is strucutred, credential configration, security, proposed strucutre for setup and testing, and proposed build order. It serves [[task:#61]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/61 "Write docs/design/implementation.md (module layout, configuration, build order)")
+
 ### Planned activities — the work items
 
 The goals and objectives are listed in §2 as epics and user stories. The table below lists every other work item, the activities that support those objectives and the proposal itself.
