@@ -59,4 +59,4 @@ The mentor approves this finished list before any interface design is merged.
 
 | Date | Change | Author |
 |------|--------|--------|
-| 10/26/2026 | Initial draft | Leila De Belen |
+| October 26, 2026 | Initial draft | Leila De Belen |
