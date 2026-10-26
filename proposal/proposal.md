@@ -98,7 +98,8 @@ Our project will run its queries on Snowflake, which is the main warehouse Sonar
 
 ### Specification and design documents
 
-No specification or design documents have been written yet. Each one will be listed here with the objective it serves as it is added to `docs/specs/` or `docs/design/`.
+Each one will be listed here with the objective it serves as it is added to `docs/specs/` or `docs/design/`.
+- [Dashboard questions](docs/specs/dashboard-questions.md): the client questions the dashboard must answer, the data behind each, and the page that answers it. Serves Objective 3.1 (#34).
 
 ### Planned activities — the work items
 
