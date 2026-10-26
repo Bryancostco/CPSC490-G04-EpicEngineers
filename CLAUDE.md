@@ -7,6 +7,9 @@
 - **Sponsor:** SNX-1 (SonarX)
 - **Source of truth:** `proposal/proposal.md`. Specs in `docs/specs/`,
   designs in `docs/design/`, proof-of-concept code in `prototype/`.
+- **Read first:** [`docs/project-context.md`](docs/project-context.md) —
+  Phase 1 scope, mentor decisions with sources, the glossary, and each
+  member's research.
 - **Stack (prototype):** data source is SonarX's Polygon blockchain data (Polymarket trades and market resolutions). Languages, frameworks, and services are not chosen yet; the team records them here and in proposal §4 once decided. Do not assume a stack.
 
 ## How we work
