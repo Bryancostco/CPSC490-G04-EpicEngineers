@@ -98,7 +98,9 @@ Our project will run its queries on Snowflake, which is the main warehouse Sonar
 
 ### Specification and design documents
 
-No specification or design documents have been written yet. Each one will be listed here with the objective it serves as it is added to `docs/specs/` or `docs/design/`.
+Each specification and design document is listed here with the objectives it serves, as it is added to `docs/specs/` or `docs/design/`.
+
+The position matching and PNL specification, [`docs/specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), defines how trades become positions, how FIFO cost basis works, when a position is open or closed, and the realized and unrealized PNL formulas, with a worked example computed by hand. It serves Objective 1.2 and Objective 1.3. [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)")
 
 ### Planned activities — the work items
 
@@ -115,6 +117,22 @@ The goals and objectives are listed in §2 as epics and user stories. The table 
 | [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20 "SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026)") | task | SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026) | none (meeting) | Team | Sprint 1 |
 | [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41 "Write §2 Goals and Objectives and §4 work item links into proposal.md") | task | Write §2 Goals and Objectives and §4 work item links into proposal.md | none (writing task) | Bryan Orozco | Sprint 1 |
 | [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42 "Write the Sprint 1 review") | task | Write the Sprint 1 review | none (writing task) | Bryan Orozco | Sprint 1 |
+| [[task:#49]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/49 "Write §3 Proposed Approach in proposal.md") | task | Write §3 Proposed Approach in proposal.md | none (writing task) | Leila De Belen | Sprint 2 |
+| [[task:#50]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/50 "Fill in docs/development-plan.md") | task | Fill in docs/development-plan.md | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#51]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/51 "Fix §8 References in proposal.md") | task | Fix §8 References in proposal.md | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4") | task | Record the chosen prototype stack in CLAUDE.md and proposal §4 | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#53]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/53 "Write the Sprint 2 review (docs/sprint-reviews/sprint-2.md)") | task | Write the Sprint 2 review (docs/sprint-reviews/sprint-2.md) | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#54]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/54 "Draft docs/specs/trader-ranking.md (Goal 2 definitions)") | task | Draft docs/specs/trader-ranking.md (Goal 2 definitions) | #30 | Justin Cox | Sprint 2 |
+| [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)") | task | Draft docs/specs/pnl-calculation.md (Goal 1 definitions) | #26 | Bryan Orozco | Sprint 2 |
+| [[task:#56]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/56 "Write docs/design/architecture.md with high level architecture and system context diagrams") | task | Write docs/design/architecture.md with high level architecture and system context diagrams | none (writing task) | Kyle Quach | Sprint 2 |
+| [[task:#57]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/57 "Write docs/design/data-model.md with the ER diagram") | task | Write docs/design/data-model.md with the ER diagram | none (writing task) | Justin Cox | Sprint 2 |
+| [[task:#58]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/58 "Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams") | task | Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#59]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/59 "Write docs/design/pnl-pipeline.md with a UML sequence diagram of a PNL run") | task | Write docs/design/pnl-pipeline.md with a UML sequence diagram of a PNL run | none (writing task) | Justin Cox | Sprint 2 |
+| [[task:#60]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/60 "Write docs/design/dashboard-flow.md with the page flow diagram") | task | Write docs/design/dashboard-flow.md with the page flow diagram | none (writing task) | Leila De Belen | Sprint 2 |
+| [[task:#61]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/61 "Write docs/design/implementation.md (module layout, configuration, build order)") | task | Write docs/design/implementation.md (module layout, configuration, build order) | none (writing task) | Kyle Quach | Sprint 2 |
+| [[task:#62]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/62 "Wire prototype v0 infrastructure: project skeleton and Snowflake connection") | task | Wire prototype v0 infrastructure: project skeleton and Snowflake connection | #25 | Kyle Quach | Sprint 2 |
+| [[task:#63]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/63 "Write the team source of truth doc from today's research") | task | Write the team source of truth doc from today's research | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#65]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/65 "Cite the Sprint 2 work items in proposal §4") | task | Cite the Sprint 2 work items in proposal §4 | none (writing task) | Bryan Orozco | Sprint 2 |
 
 ## 5. Project Outcomes
 
@@ -168,14 +186,16 @@ what fraction of each artifact was AI-assisted, and how you verified it.〉
 
 ## 8. References
 
-> [1] Burges, C. J. C. Tutorial on Support Vector Machines for Pattern
-> Recognition. Kluwer Academic Publishers, 1998.
-> [2] Chen, P., Fan, R., and Lin, C. A study on SMO-type decomposition
-> methods for support vector machines. IEEE Transactions on Neural Networks,
-> 2006.
-> [3] For Wikipedia, specify the URL here
-> [4] For a web source, specify the URL here plus date accessed
+[1] Polymarket. What is Polymarket. Polymarket Help Center. https://help.polymarket.com/en/articles/13364060-what-is-polymarket (accessed Oct. 4, 2026).
 
-〈Number references in the order first cited and cite them in the text as
-[1], [2]. Every entry must be a source a team member has actually read and
-can produce on request.〉
+[2] Polygon. WTF is Polygon? Polygon Blog, Apr. 4, 2024. https://polygon.technology/blog/wtf-is-polygon (accessed Oct. 24, 2026).
+
+[3] Polymarket. Polymarket 101. Polymarket Documentation. https://docs.polymarket.com/polymarket-101 (accessed Oct. 4, 2026).
+
+[4] Polymarket Analytics. Polymarket Analytics: Prediction Market Data, Analytics and Trader Leaderboard. https://polymarketanalytics.com/ (accessed Oct. 4, 2026).
+
+[5] Predicts.guru. https://www.predicts.guru/ (accessed Oct. 4, 2026).
+
+[6] Polycopy. Polycopy: The Home for Copy Trading on Polymarket. https://polycopy.app/ (accessed Oct. 24, 2026).
+
+[7] PolyTrack. PolyTrack: #1 Polymarket Whale Tracker and Copy Trading Platform. https://polytrackhq.app/ (accessed Oct. 24, 2026).
