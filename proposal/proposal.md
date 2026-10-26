@@ -71,7 +71,7 @@ Objective 3.4: Create a fast dashboard where all pages load in under 3 seconds o
 
 Objective 3.5: Show a functional version of our dashboard to SonarX and note their feedback. [[story:#38]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/38 "Objective 3.5: Show a functional version of our dashboard to SonarX and note their feedback")
 
-## 3. Proposed Approach
+## 3. Proposed Approaches
 
 Deciding on how traders are ranked. We chose to rank traders by both total PNL and return on investment (ROI), rather than only choosing one (Objective 2.1). Total PNL will help show us the amount of profit or loss a trader generates in actual dollars, though it tends to favor the wallets with more capital, rather than the wallets profiting more capital. ROI measures profit relative to the capital invested, percentage wise, but it over-reward small wallets that may have had lucky bets. By using both, on the dashboard we can have clients sort the different traders, by either total PNL or ROI (Objective 3.2), and our dashboard is more detailed with both.
 
