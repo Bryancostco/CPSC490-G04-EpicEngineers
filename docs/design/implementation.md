@@ -1,3 +1,5 @@
+Epic: #24, #29, #33 · Stories: Implemtation Plan + Mermaid Diagram
+
 # Prototype Structure, Setup, and Implementation Plan
 
 ## 1. Purpose
@@ -28,8 +30,7 @@ prototype/
 │   ├── unit/
 │   ├── integration/
 │   └── fixtures/
-└── docs/
-    └── architecture.md
+
 ```
 
 The exact filenames and source directories may change based on the decision in Issue #52.
@@ -220,3 +221,48 @@ The following remain dependent on Issue #52:
 The prototype foundation is ready for implementation when the stack decision is recorded, the setup is reproducible, secret handling is verified, and the team has agreed on the minimum end-to-end workflow.
 
 The prototype is ready for demonstration when that workflow runs successfully, the applicable tests pass, and another developer can follow the documented setup without needing undocumented steps.
+
+## 8. Implementation Diagram
+
+```mermaid 
+%% High-Level Module Prototype Diagram: Figure 3. User Flow Visualization
+flowchart TD
+    User["User"]
+
+    subgraph App["Poly Market Prototype"]
+        UI["Application Interface"]
+        Services["Services"]
+        DB["Database Access"]
+        Config["Configuration"]
+        
+        UI --> Services
+        Services --> DB
+        Config -. "Provides environment variables" .-> UI
+        Config -. "Provides connection settings" .-> DB
+    end
+
+    Snowflake[("Snowflake Database")]
+
+    User --> UI
+    DB --> Snowflake
+
+    subgraph Tests["Testing"]
+        UnitTests["Unit Tests"]
+        IntegrationTests["Integration Tests"]
+        Fixtures["Test Fixtures<br/>tests/fixtures/"]
+    end
+
+    UnitTests -. "Tests modules" .-> Services
+    UnitTests -. "Tests modules" .-> Config
+    IntegrationTests -. "Tests connectivity and queries" .-> DB
+    Fixtures -. "Provides synthetic data" .-> UnitTests
+    Fixtures -. "Provides synthetic data" .-> IntegrationTests
+
+    classDef external fill:#e8f3ff,stroke:#3478b8,color:#111827
+    classDef module fill:#f0fdf4,stroke:#32945b,color:#111827
+    classDef testing fill:#fff7ed,stroke:#c47a25,color:#111827
+
+    class User,Snowflake external
+    class UI,Services,DB,Config module
+    class UnitTests,IntegrationTests,Fixtures testing
+```
