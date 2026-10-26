@@ -1,3 +1,5 @@
+
+
 ```mermaid 
 flowchart TB
     subgraph architecture ["High-level architecture"]
@@ -10,6 +12,15 @@ flowchart TB
         DB -->|Source data| Analysis
         Analysis -->|Produces| Results
         Results -->|Visualized in| Dashboard
+    end
+
+    subgraph context ["System context"]
+        direction LR
+        User["Dashboard user"]
+        System["Analytics system<br/>Database, analysis, results, and dashboard"]
+
+        User -->|Views dashboard| System
+        System -->|Presents results| User
     end
 
     classDef data fill:#eef2ff,stroke:#818cf8
