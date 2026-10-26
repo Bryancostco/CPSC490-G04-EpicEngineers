@@ -106,6 +106,7 @@ The goals and objectives are listed in §2 as epics and user stories. The table 
 | [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20 "SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026)") | task | SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026) | none (meeting) | Team | Sprint 1 |
 | [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41 "Write §2 Goals and Objectives and §4 work item links into proposal.md") | task | Write §2 Goals and Objectives and §4 work item links into proposal.md | none (writing task) | Bryan Orozco | Sprint 1 |
 | [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42 "Write the Sprint 1 review") | task | Write the Sprint 1 review | none (writing task) | Bryan Orozco | Sprint 1 |
+| [[task:#49]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/49 "Write §3 Proposed Approach in proposal.md") | task | Proposal §3 Proposed Approach | none (writing task) | Leila De Belen | Sprint 2 |
 
 ## 5. Project Outcomes
 
