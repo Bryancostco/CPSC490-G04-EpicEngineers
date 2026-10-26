@@ -91,11 +91,22 @@ Use these words the same way everywhere. The full definitions are in
 - The kickoff notes and Erel's Oct 20 follow up on #20 are the source for
   every row in the Mentor decisions table above.
 
-### Leila De Belen
+### Leila De Belen - Polygon background and PolyTrack (#11)
 
-Not shared in the repository yet. Leila's research goes here, with sources
-and dates accessed, before this document is marked final.
-
+- Polygon is described by its developer, Polygon Labs, as a network of
+  connected blockchains. The post notes that most people still think of
+  "Polygon" as the Polygon Proof-of-Stake (PoS) chain, which is one of the
+  most widely used blockchains, with daily active addresses reaching a record
+  of about 1.3 million in April 2024. This gives context for why SonarX's
+  Polygon blockchain data is a rich source of Polymarket activity. Polygon
+  Labs, "WTF is Polygon?", Apr. 4, 2024,
+  https://polygon.technology/blog/wtf-is-polygon (accessed Oct. 4, 2026).
+- **PolyTrack** is another Polymarket tracking tool. It describes itself as a
+  whale tracker and copy-trading platform that follows top wallets in real
+  time and offers a free tier. Its focus is on following and copying traders,
+  not on explaining how their profit and loss is calculated or what drives
+  their results, which supports the gap our Goals 1 and 2 address. PolyTrack,
+  https://polytrackhq.app/ (accessed Oct. 4, 2026).
 ## Open questions we are waiting on
 
 The open questions for Erel and Sergio live in the Open questions table of
