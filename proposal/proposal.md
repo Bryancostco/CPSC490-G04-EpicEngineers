@@ -73,24 +73,15 @@ Objective 3.5: Show a functional version of our dashboard to SonarX and note the
 
 ## 3. Proposed Approaches
 
-> Describe your proposed approach to solve the problem, specifying how you
-> will achieve the stated goals. List some possible strategies.
+Deciding on how traders are ranked. We chose to rank traders by both total PNL and return on investment (ROI), rather than only choosing one (Objective 2.1). Total PNL will help show us the amount of profit or loss a trader generates in actual dollars, though it tends to favor the wallets with more capital, rather than the wallets profiting more capital. ROI measures profit relative to the capital invested, percentage wise, but it over-reward small wallets that may have had lucky bets. By using both, on the dashboard we can have clients sort the different traders, by either total PNL or ROI (Objective 3.2), and our dashboard is more detailed with both.
 
-〈Your approach — **clear and concise**. State the strategy you chose, the
-alternatives you considered, and the reasoning that decided between them.
-Think of this as the argument, not the manual: a reader should finish this
-section understanding *what* you will do and *why that* rather than the
-alternatives.〉
+How accuracy is validated. We decided to compare 25+ wallets to Predicts.guru and Polymarket Analytics instead of internal consistency checks only because we can check that our data matches the external sources provided (Objective 1.4). By doing that, our credibility is better because  it is relying on reliable sources. If we were to only do internal consistency checks, it would be great for testing during our development phase, but overall would not be able to match the real-world trading market.
 
-**Keep the details out of this section.** Tooling, platforms, frameworks,
-DBMS choices, environment setup, diagrams, and the work breakdown all belong
-in §4 (Required Environment, Resources, and Planned Activities). If a
-sentence here names a version number, a library, or a configuration, it
-probably belongs in §4 — leave a pointer instead ("the implementation stack
-is detailed in §4").
+Scope. We will start with historical proxy wallets (Phase 1) rather than starting with linking to owner wallets and use real-time data (Phase 2). This is because for the beginning, we are able to validate wallet rankings, PNL, and ROI before interweaving live data complexity, which will be easier to work with. If we were to link owner wallets and use-real time data, there would be data reliability issues because the real data will be constantly changing, whereas historical proxy wallets allow us to validate our data with external resources like Polymarket Analytics. 
 
-〈A few paragraphs, or a short list of candidate strategies with one line of
-trade-off each. If it runs past a page, you are writing §4.〉
+Dashboard. We have decided to agree on client questions with the mentor first (Objective 3.1), rather than build first and adjust later. We already made a document containing questions that the clients would want answered within this dashboard. By choosing to have client questions to frame our dashboard, we can easily work with our mentor on how our project is supposed to look, rather than building a completely different dashboard that we may need to change completely. 
+
+The implementation stack and tooling are detailed in §4.
 
 ## 4. Required Environment, Resources, and Planned Activities
 
@@ -98,8 +89,12 @@ Our project will run its queries on Snowflake, which is the main warehouse Sonar
 
 ### Specification and design documents
 
-Each one will be listed here with the objective it serves as it is added to `docs/specs/` or `docs/design/`.
+Each specification and design document is listed here with the objectives it serves, as it is added to `docs/specs/` or `docs/design/`.
 - [Dashboard questions](../docs/specs/dashboard-questions.md): the client questions the dashboard must answer, the data behind each, and the page that answers it. Serves Objective 3.1 (#34).
+
+The position matching and PNL specification, [`docs/specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), defines how trades become positions, how FIFO cost basis works, when a position is open or closed, and the realized and unrealized PNL formulas, with a worked example computed by hand. It serves Objective 1.2 and Objective 1.3. [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)")
+
+The trader ranking and behavior specification, [`docs/specs/trader-ranking.md`](../docs/specs/trader-ranking.md), defines how proxy wallets are ranked by total PNL and by return on investment (including the minimum activity rule and the tie breaks), and how win rate, average entry price, market categories traded, and position holding period are calculated, with a worked example computed by hand. It serves Objective 2.1 and Objective 2.2. [[task:#54]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/54 "Draft docs/specs/trader-ranking.md (Goal 2 definitions)")
 
 ### Planned activities — the work items
 
@@ -116,6 +111,23 @@ The goals and objectives are listed in §2 as epics and user stories. The table 
 | [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20 "SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026)") | task | SNX-1 kickoff meeting notes with SonarX (Oct 6, 2026) | none (meeting) | Team | Sprint 1 |
 | [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41 "Write §2 Goals and Objectives and §4 work item links into proposal.md") | task | Write §2 Goals and Objectives and §4 work item links into proposal.md | none (writing task) | Bryan Orozco | Sprint 1 |
 | [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42 "Write the Sprint 1 review") | task | Write the Sprint 1 review | none (writing task) | Bryan Orozco | Sprint 1 |
+| [[task:#49]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/49 "Write §3 Proposed Approach in proposal.md") | task | Write §3 Proposed Approach in proposal.md | none (writing task) | Leila De Belen | Sprint 2 |
+| [[task:#50]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/50 "Fill in docs/development-plan.md") | task | Fill in docs/development-plan.md | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#51]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/51 "Fix §8 References in proposal.md") | task | Fix §8 References in proposal.md | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4") | task | Record the chosen prototype stack in CLAUDE.md and proposal §4 | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#53]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/53 "Write the Sprint 2 review (docs/sprint-reviews/sprint-2.md)") | task | Write the Sprint 2 review (docs/sprint-reviews/sprint-2.md) | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#54]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/54 "Draft docs/specs/trader-ranking.md (Goal 2 definitions)") | task | Draft docs/specs/trader-ranking.md (Goal 2 definitions) | #30 | Justin Cox | Sprint 2 |
+| [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)") | task | Draft docs/specs/pnl-calculation.md (Goal 1 definitions) | #26 | Bryan Orozco | Sprint 2 |
+| [[task:#56]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/56 "Write docs/design/architecture.md with high level architecture and system context diagrams") | task | Write docs/design/architecture.md with high level architecture and system context diagrams | none (writing task) | Kyle Quach | Sprint 2 |
+| [[task:#57]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/57 "Write docs/design/data-model.md with the ER diagram") | task | Write docs/design/data-model.md with the ER diagram | none (writing task) | Justin Cox | Sprint 2 |
+| [[task:#58]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/58 "Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams") | task | Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#59]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/59 "Write docs/design/pnl-pipeline.md with a UML sequence diagram of a PNL run") | task | Write docs/design/pnl-pipeline.md with a UML sequence diagram of a PNL run | none (writing task) | Justin Cox | Sprint 2 |
+| [[task:#60]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/60 "Write docs/design/dashboard-flow.md with the page flow diagram") | task | Write docs/design/dashboard-flow.md with the page flow diagram | none (writing task) | Leila De Belen | Sprint 2 |
+| [[task:#61]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/61 "Write docs/design/implementation.md (module layout, configuration, build order)") | task | Write docs/design/implementation.md (module layout, configuration, build order) | none (writing task) | Kyle Quach | Sprint 2 |
+| [[task:#62]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/62 "Wire prototype v0 infrastructure: project skeleton and Snowflake connection") | task | Wire prototype v0 infrastructure: project skeleton and Snowflake connection | #25 | Kyle Quach | Sprint 2 |
+| [[task:#63]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/63 "Write the team source of truth doc from today's research") | task | Write the team source of truth doc from today's research | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#65]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/65 "Cite the Sprint 2 work items in proposal §4") | task | Cite the Sprint 2 work items in proposal §4 | none (writing task) | Bryan Orozco | Sprint 2 |
+
 
 ## 5. Project Outcomes
 
@@ -169,14 +181,16 @@ what fraction of each artifact was AI-assisted, and how you verified it.〉
 
 ## 8. References
 
-> [1] Burges, C. J. C. Tutorial on Support Vector Machines for Pattern
-> Recognition. Kluwer Academic Publishers, 1998.
-> [2] Chen, P., Fan, R., and Lin, C. A study on SMO-type decomposition
-> methods for support vector machines. IEEE Transactions on Neural Networks,
-> 2006.
-> [3] For Wikipedia, specify the URL here
-> [4] For a web source, specify the URL here plus date accessed
+[1] Polymarket. What is Polymarket. Polymarket Help Center. https://help.polymarket.com/en/articles/13364060-what-is-polymarket (accessed Oct. 4, 2026).
 
-〈Number references in the order first cited and cite them in the text as
-[1], [2]. Every entry must be a source a team member has actually read and
-can produce on request.〉
+[2] Polygon. WTF is Polygon? Polygon Blog, Apr. 4, 2024. https://polygon.technology/blog/wtf-is-polygon (accessed Oct. 24, 2026).
+
+[3] Polymarket. Polymarket 101. Polymarket Documentation. https://docs.polymarket.com/polymarket-101 (accessed Oct. 4, 2026).
+
+[4] Polymarket Analytics. Polymarket Analytics: Prediction Market Data, Analytics and Trader Leaderboard. https://polymarketanalytics.com/ (accessed Oct. 4, 2026).
+
+[5] Predicts.guru. https://www.predicts.guru/ (accessed Oct. 4, 2026).
+
+[6] Polycopy. Polycopy: The Home for Copy Trading on Polymarket. https://polycopy.app/ (accessed Oct. 24, 2026).
+
+[7] PolyTrack. PolyTrack: #1 Polymarket Whale Tracker and Copy Trading Platform. https://polytrackhq.app/ (accessed Oct. 24, 2026).
