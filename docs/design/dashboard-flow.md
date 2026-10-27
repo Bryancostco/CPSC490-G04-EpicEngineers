@@ -3,7 +3,7 @@
 # Dashboard page flow
 
 Figure 1 shows how a SonarX client moves between dashboard pages. Each page
-answers questions in [dashboard-questions.md](../specs/dashboard-questions.md).
+answers questions in `docs/specs/dashboard-questions.md`
 
 ![Page flow diagram with two pages. A client opens the leaderboard, clicks a trader to reach the wallet lookup page, or enters a wallet address to reach it directly, and can return to the leaderboard.](diagrams/dashboard-flow.png)
 
