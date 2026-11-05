@@ -136,6 +136,21 @@ Sprint 3 plan (`docs/sprint-plans/sprint-3.md`) gives each of them a
 sequence of tasks, and the team checks progress against it at the
 Sprint 3 review.
 
+## Development plan revisited
+
+Three early warning signs in the risk register (`docs/development-plan.md`
+§4) appeared during Sprint 2. The plan says a risk whose sign has appeared is
+a problem, tracked in an issue:
+
+| Risk | Sign that appeared | Tracked in |
+|---|---|---|
+| R1 Snowflake access arrives late | No Snowflake credentials by Oct 26; the team joined the SonarX Slack that day | The live queries (#105) and the data source spec (#103, #104); the prototype slice runs on fixtures meanwhile |
+| R2 The prototype stack is still undecided | #52 still open on Oct 25, blocking #56, #61 and #62 | #52; #56 and #61 shipped as documents that defer the stack, #62 is still blocked |
+| R5 Contribution stays uneven | Two members under 2 merged pull requests | The contribution snapshot above and the Sprint 3 plan |
+
+No rule in the plan changes this sprint. The QA / harness owner for
+Sprint 3 is @justincox8, as the plan's rotation says.
+
 ## What we change next sprint
 
 - Pull requests merged into `develop` close their issues automatically
