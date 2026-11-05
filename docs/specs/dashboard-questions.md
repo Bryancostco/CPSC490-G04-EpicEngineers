@@ -23,7 +23,7 @@ Source column: **Mentor** = from mentor guidance (#20), **Proposed** = added by 
 
 | ID | Question | Data that answers it | Page | Source |
 |----|----------|----------------------|------|--------|
-| Q1 | Who are the most profitable traders over a given window? | Per-wallet realized PNL, unrealized PNL, and total PNL, aggregated over the selected date range; trade timestamps | P1 | Mentor |
+| Q1 | Who are the most profitable traders over a given window? | Per-wallet realized PNL, unrealized PNL, total PNL, return on investment (ROI), and win rate (share of closed positions that were profitable), aggregated over the selected date range; trade timestamps | P1 | Mentor |
 | Q2 | What markets and strategies drive their returns? | Per-wallet PNL grouped by market, market category, and strategy label; position sizes and holding periods | P3 (linked from P2) | Mentor |
 | Q3 | Which wallets are consistently early on winning outcomes? | Entry timestamp and entry price per position vs. market open, price path, and resolution time; resolved outcome per position | P4 | Mentor |
 | Q4 | How consistent is a trader's profitability, or is it driven by a few big wins? | Per-position PNL distribution, win rate, PNL by period, largest-win share of total PNL | P2 | Proposed |
