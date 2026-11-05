@@ -135,6 +135,8 @@ The goals and objectives are listed in §2 as epics and user stories. The table 
 | [[task:#62]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/62 "Wire prototype v0 infrastructure: project skeleton and Snowflake connection") | task | Wire prototype v0 infrastructure: project skeleton and Snowflake connection | #25 | Kyle Quach | Sprint 2 |
 | [[task:#63]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/63 "Write the team source of truth doc from today's research") | task | Write the team source of truth doc from today's research | none (writing task) | Bryan Orozco | Sprint 2 |
 | [[task:#65]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/65 "Cite the Sprint 2 work items in proposal §4") | task | Cite the Sprint 2 work items in proposal §4 | none (writing task) | Bryan Orozco | Sprint 2 |
+| [[task:#80]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/80 "Revision of High Level Architecture and System Context Diagrams") | task | Revision of High level Architecture and System Context Diagrams to fully fit project scope | none (writing task) |Kyle Quach | Sprint 2 |
+
 
 ## 5. Project Outcomes
 
