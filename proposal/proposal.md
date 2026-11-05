@@ -85,7 +85,7 @@ The implementation stack and tooling are detailed in §4.
 
 ## 4. Required Environment, Resources, and Planned Activities
 
-Our project will run its queries on Snowflake, which is the main warehouse SonarX uses for its Polygon blockchain data, as confirmed at our kickoff meeting with SonarX. SonarX allows us to use open source tools and libraries. The languages, frameworks, and services for the PNL pipeline and the dashboard have not been chosen yet. We will record them in this section once the team decides, along with a high level architecture diagram and a system context diagram kept in `docs/design/`.
+Our project will run its queries on Snowflake, which is the main warehouse SonarX uses for its Polygon blockchain data, as confirmed at our kickoff meeting with SonarX. SonarX allows us to use open source tools and libraries. The PNL pipeline is written in Python and runs outside Snowflake: it reads trades and market resolutions through the Snowflake Python connector, and builds positions, FIFO lots and profit and loss in Python using exact decimals, so the worked examples in our specifications become automated tests directly. We chose this over computing PNL in SQL inside Snowflake, where FIFO matching across partial sales is hard to express and to test, and over Python running inside Snowflake, which depends on what SonarX's account allows. Where the computed results are stored and which framework the dashboard uses have not been chosen yet; we will record them in this section once the team decides. [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4")
 
 ### Specification and design documents
 
