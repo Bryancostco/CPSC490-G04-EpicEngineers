@@ -22,6 +22,7 @@
 - **Specifications:** [`docs/specs/`](docs/specs/) · **Designs:** [`docs/design/`](docs/design/)
 - **Prototype:** [`prototype/`](prototype/) — run instructions in its README
 - **Sprint reviews:** [`docs/sprint-reviews/`](docs/sprint-reviews/)
+- **Current sprint plan (start here):** [`docs/sprint-plans/sprint-3.md`](docs/sprint-plans/sprint-3.md)
 
 ## Project summary
 

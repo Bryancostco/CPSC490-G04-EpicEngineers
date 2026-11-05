@@ -19,6 +19,15 @@ The short version. Details are linked from each line.
    [`docs/checklists.md`](docs/checklists.md) and names the items they
    checked — reviewing is real work here, not a rubber stamp.
 7. **Green CI + one approval → squash merge**, branch deleted.
+   GitHub itself only honours `Closes #n` on merges into `main`, so
+   `.github/workflows/close-linked-issues.yml` closes the linked issues when
+   a PR merges into `develop`, `release/*` or `hotfix/*` (#82). Name the
+   task or feature you finished, not the story above it, unless the story's
+   acceptance criteria are met.
+8. **Every new issue goes on the chain** (setup guide §4): story → feature →
+   task → sub-task as sub-issues, one assignee, the sprint milestone, no
+   `sp:` below a story, and a paragraph in proposal §4 that ends with its
+   reference, e.g. `[feature:#83]`.
 
 ## Working agreements we hold ourselves to
 
