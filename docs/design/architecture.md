@@ -1,43 +1,55 @@
 Epic: #24, #29, #33 · Stories: Writing Documentation for Architecture
+
 ```mermaid 
+
+
 flowchart TB
-%% High-Level Archiecture Diagram: Figure 1. Data Flow Visualization
-
-
-
-    subgraph architecture ["High-level architecture"]
-        direction LR
-        DB[("Snow Flake Database")]
-        Analysis["Data analysis"]
+  %% High-Level Archiecture Diagram: Figure 1. Data Flow Visualization
+ subgraph architecture["High-level architecture"]
+    direction LR
+        DB[("SonarX-owned Snowflake database")]
+        Analysis["Pull trades"]
+        Positions["Build positions"]
+        PnL["Compute PnL"]
+        Ranking["Rank wallets"]
         Results["Data results"]
-        Dashboard["Dashboard display"]
+        Storage[("Results storage<br>Pending #52")]
+  end
 
-        DB -->|Source data| Analysis
-        Analysis -->|Produces| Results
-        Results -->|Visualized in| Dashboard
-    end
+  %% System Context Diagram: Figure 2. Dashboard user workflow, display of dashboard
+ subgraph context["System context"]
+    direction LR
+        SonarxDB[("SonarX-owned Snowflake database<br>External to our system")]
+        System["Our analytics system<br>Data analysis, results storage, and dashboard"]
+        User["Sonarx clients"]
+        SystemDashboard["Dashboard<br>Displays information"]
+  end
+    DB -- Source data --> Analysis
+    Analysis --> Positions
+    Positions --> PnL
+    PnL --> Ranking
+    Ranking -- Produces --> Results
+    Results -- Stored in --> Storage
+    Storage -- Visualized in --> Dashboard["Dashboard"]
+    SonarxDB -- Trades pulled by our system --> System
+    User -- Views dashboard --> System
+    System L_System_SystemDashboard_0@-- Results pushed to dashboard --> SystemDashboard
 
-
-
-%% System Context Diagram: Figure 2. Dashboard user workflow, display of dashboard
-
-    subgraph context ["System context"]
-        direction LR
-        User["Dashboard user"]
-        System["Analytics system<br/>Database, analysis, results, and dashboard"]
-
-        User -->|Views dashboard| System
-        System -->|Presents results| User
-    end
-
+     DB:::data
+     Analysis:::processing
+     Positions:::processing
+     PnL:::processing
+     Ranking:::processing
+     Results:::data
+     Storage:::data
+     SonarxDB:::data
+     System:::processing
+     User:::actor
+     Dashboard:::presentation
     classDef data fill:#eef2ff,stroke:#818cf8
     classDef processing fill:#f5f3ff,stroke:#a78bfa
     classDef presentation fill:#f0fdfa,stroke:#2dd4bf
     classDef actor fill:#fff7ed,stroke:#fb923c
 
-    class DB,Results data
-    class Analysis,System processing
-    class Dashboard presentation
-    class User actor
-
-````
+    L_System_SystemDashboard_0@{ curve: linear }
+```
