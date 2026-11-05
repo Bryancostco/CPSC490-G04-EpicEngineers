@@ -1,17 +1,71 @@
 {
-  "_source": "docs/specs/pnl-calculation.md, section 'Worked example, computed by hand'. Made up proxy wallet W; numbers are strings so they load as exact decimals (NFR-2).",
+  "_source": "docs/specs/pnl-calculation.md, 'Worked example, computed by hand' (trades, prices, outcomes), with the dates from docs/specs/trader-ranking.md's worked example: A's first buy 2026-01-10, M1 resolves 2026-03-01, B's buy 2026-02-01, M2 resolves 2026-02-21, T 2026-04-01. Numbers are strings so they load as exact decimals (NFR-2).",
   "trades": [
-    {"wallet": "0xwallet_w", "market": "M1", "outcome_token": "M1_YES", "side": "buy",  "shares": "100", "price": "0.40", "block_number": 100, "log_index": 0, "block_time": "2026-01-10T00:00:00+00:00"},
-    {"wallet": "0xwallet_w", "market": "M1", "outcome_token": "M1_YES", "side": "buy",  "shares": "50",  "price": "0.60", "block_number": 200, "log_index": 0, "block_time": "2026-01-20T00:00:00+00:00"},
-    {"wallet": "0xwallet_w", "market": "M1", "outcome_token": "M1_YES", "side": "sell", "shares": "120", "price": "0.70", "block_number": 300, "log_index": 0, "block_time": "2026-01-30T00:00:00+00:00"},
-    {"wallet": "0xwallet_w", "market": "M2", "outcome_token": "M2_NO",  "side": "buy",  "shares": "200", "price": "0.25", "block_number": 150, "log_index": 0, "block_time": "2026-01-15T00:00:00+00:00"}
+    {
+      "wallet": "0xwallet_w",
+      "market": "M1",
+      "outcome_token": "M1_YES",
+      "side": "buy",
+      "shares": "100",
+      "price": "0.40",
+      "block_number": 100,
+      "log_index": 0,
+      "block_time": "2026-01-10T00:00:00+00:00"
+    },
+    {
+      "wallet": "0xwallet_w",
+      "market": "M1",
+      "outcome_token": "M1_YES",
+      "side": "buy",
+      "shares": "50",
+      "price": "0.60",
+      "block_number": 200,
+      "log_index": 0,
+      "block_time": "2026-01-20T00:00:00+00:00"
+    },
+    {
+      "wallet": "0xwallet_w",
+      "market": "M1",
+      "outcome_token": "M1_YES",
+      "side": "sell",
+      "shares": "120",
+      "price": "0.70",
+      "block_number": 300,
+      "log_index": 0,
+      "block_time": "2026-01-30T00:00:00+00:00"
+    },
+    {
+      "wallet": "0xwallet_w",
+      "market": "M2",
+      "outcome_token": "M2_NO",
+      "side": "buy",
+      "shares": "200",
+      "price": "0.25",
+      "block_number": 350,
+      "log_index": 0,
+      "block_time": "2026-02-01T00:00:00+00:00"
+    }
   ],
   "resolutions": [
-    {"market": "M1", "resolved_at": "2026-03-01T00:00:00+00:00", "payout_per_share": {"M1_YES": "1.00", "M1_NO": "0.00"}},
-    {"market": "M2", "resolved_at": "2026-02-01T00:00:00+00:00", "payout_per_share": {"M2_YES": "1.00", "M2_NO": "0.00"}}
+    {
+      "market": "M1",
+      "resolved_at": "2026-03-01T00:00:00+00:00",
+      "payout_per_share": {
+        "M1_YES": "1.00",
+        "M1_NO": "0.00"
+      }
+    },
+    {
+      "market": "M2",
+      "resolved_at": "2026-02-21T00:00:00+00:00",
+      "payout_per_share": {
+        "M2_YES": "1.00",
+        "M2_NO": "0.00"
+      }
+    }
   ],
   "as_of": {
-    "m1_unresolved": "2026-02-15T00:00:00+00:00",
-    "m1_resolved": "2026-03-15T00:00:00+00:00"
+    "m1_unresolved": "2026-02-25T00:00:00+00:00",
+    "m1_resolved": "2026-04-01T00:00:00+00:00"
   }
 }
