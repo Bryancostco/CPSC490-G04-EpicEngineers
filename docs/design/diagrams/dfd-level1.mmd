@@ -1,0 +1,22 @@
+%% Figure 2: Level 1 DFD. Editable source for dfd-level1.png.
+%% Process n.0 is step n in docs/specs/pnl-calculation.md (Pipeline steps).
+%% Cylinders are data stores; storage technology is decided in #52.
+flowchart TD
+  sx([SonarX Snowflake<br/>Polygon data]) -->|trades and resolutions,<br/>last 12 months| p1[1.0 Extract trades<br/>and resolutions]
+  p1 -->|normalized trades,<br/>resolutions| d1[(D1 Trades and<br/>resolutions)]
+  d1 -->|trades in chain order| p2[2.0 Build positions<br/>and lots]
+  p2 -->|positions, FIFO lots,<br/>realized PNL from sales| d2[(D2 Positions<br/>and lots)]
+  d1 -->|resolutions| p3[3.0 Match resolutions,<br/>set status]
+  d2 -->|positions| p3
+  p3 -->|open or closed status| d2
+  d2 -->|remaining lots, status| p4[4.0 Compute PNL]
+  d1 -->|latest price,<br/>payout per share| p4
+  p4 -->|realized, unrealized,<br/>total PNL| d3[(D3 Wallet PNL)]
+  d3 -->|wallet PNL| p5[5.0 Rank wallets,<br/>compute metrics]
+  d2 -->|closed positions| p5
+  p5 -->|ranks and<br/>trading metrics| d4[(D4 Rankings<br/>and metrics)]
+  d4 -->|leaderboard rows| p6[6.0 Serve dashboard]
+  d3 -->|wallet totals| p6
+  d2 -->|open and closed positions| p6
+  cl([SonarX client<br/>dashboard user]) -->|time window, wallet,<br/>sort and filter choices| p6
+  p6 -->|leaderboard and<br/>wallet lookup pages| cl
