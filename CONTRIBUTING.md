@@ -13,6 +13,9 @@ The short version. Details are linked from each line.
    prompts in [`docs/aidlc/prompt-library.md`](docs/aidlc/prompt-library.md).
 4. **Run the harness before you push:**
    `python .github/scripts/check_repo.py`
+   If you changed anything in `docs/specs/` or `docs/design/`, also run
+   `python scripts/inline_docs.py`: proposal §4 carries a full copy of every
+   specification and design document (#141), and this refreshes it.
 5. **Open a pull request into `develop`**, fill in the template: link the
    story (`Closes #n`), say what you verified, disclose AI use.
 6. **A teammate who is not the author reviews it** against
