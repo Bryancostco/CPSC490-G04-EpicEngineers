@@ -135,6 +135,16 @@ The goals and objectives are listed in §2 as epics and user stories. The table 
 | [[task:#63]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/63 "Write the team source of truth doc from today's research") | task | Write the team source of truth doc from today's research | none (writing task) | Bryan Orozco | Sprint 2 |
 | [[task:#65]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/65 "Cite the Sprint 2 work items in proposal §4") | task | Cite the Sprint 2 work items in proposal §4 | none (writing task) | Bryan Orozco | Sprint 2 |
 
+The data model, [`docs/design/data-model.md`](../docs/design/data-model.md), shows what data our PNL pipeline reads from SonarX and the tables we build from it. [[task:#57]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/57 "Write docs/design/data-model.md with the ER diagram")
+
+![ER diagram. Two pending SonarX tables, trades and resolutions, feed our tables. Many trades are grouped into one position, and each buy trade creates at most one lot. A position holds zero or more lots and is resolved by at most one resolution. One wallet PNL row totals one or more positions, and has at most one wallet metrics row.](../docs/design/diagrams/data-model.png)
+
+*Figure 1 — ER diagram of the SonarX tables we read (pending) and the tables we create. Editable source: [`docs/design/diagrams/data-model.mmd`](../docs/design/diagrams/data-model.mmd).*
+
+Figure 1 shows how our data fits together. We start with two kinds of data from SonarX: the trades each wallet made and the results of the markets those trades were in. We don't have SonarX's table documentation yet, so those two boxes are our best guess based on what our specs need, and they're marked pending. From the trades we build a position for each wallet, market and outcome (YES or NO), and a lot for each buy so that sales can be matched against the oldest purchase first. A market's result, or running out of shares, closes a position, and each position records its profit and loss.
+
+From there the diagram rolls up. The wallet PNL table adds up a wallet's positions into one total, and the wallet metrics table holds the numbers we use to rank and describe traders, like ROI, win rate and average entry price. Everything in our own tables comes from a requirement in the PNL and ranking specs. Anything we haven't decided yet, such as tracking exactly which lots each sale used up, is left out on purpose and listed in the design document. Once SonarX sends its schema documents, we'll check the two SonarX boxes against them and note the document and date.
+
 ## 5. Project Outcomes
 
 > Describe the outcomes or deliverables, e.g., final project report, user
