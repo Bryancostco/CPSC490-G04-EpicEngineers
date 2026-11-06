@@ -68,3 +68,4 @@ variable is set.
 |---|---|
 | Sprint 3 | v0 skeleton: settings from environment variables, Snowflake client, smoke query, tests without credentials (#62) |
 | Sprint 3 | Position builder: trades grouped into positions with FIFO lots, chain order, incomplete flag, FR-1 to FR-5 tested on the spec's worked example (#108) |
+| Sprint 3 | Resolution matching: each position open or closed as of T, with its market's resolution and payouts attached, FR-8 to FR-10 (#109) |

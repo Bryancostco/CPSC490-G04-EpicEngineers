@@ -37,3 +37,26 @@ def worked_example() -> dict:
 def worked_example_trades(worked_example) -> list[Trade]:
     """Return the worked example's trades as Trade records, in file order."""
     return [make_trade(row) for row in worked_example["trades"]]  # convert every row
+
+
+def make_resolution(row: dict):
+    """Turn one fixture row into a Resolution, with payouts as exact decimals."""
+    from services.resolutions import Resolution  # imported here so #108's tests do not depend on #109's module
+
+    return Resolution(  # build the record
+        market=row["market"],  # market id
+        resolved_at=datetime.fromisoformat(row["resolved_at"]),  # when the market resolved
+        payout_per_share={token: Decimal(value) for token, value in row["payout_per_share"].items()},  # exact payouts
+    )  # end of the record
+
+
+@pytest.fixture
+def worked_example_resolutions(worked_example) -> list:
+    """Return the worked example's market resolutions as Resolution records."""
+    return [make_resolution(row) for row in worked_example["resolutions"]]  # convert every row
+
+
+@pytest.fixture
+def worked_example_as_of(worked_example) -> dict[str, datetime]:
+    """Return the worked example's two as of times: M1 unresolved and M1 resolved."""
+    return {name: datetime.fromisoformat(value) for name, value in worked_example["as_of"].items()}  # parse both
