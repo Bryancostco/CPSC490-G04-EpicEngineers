@@ -1,0 +1,75 @@
+%% Figure 1: ER diagram. Editable source for data-model.png.
+%% The team has NOT received SonarX's schema documents. The two SonarX
+%% entities are INFERRED from the specs: names and columns are PENDING until
+%% the schema documents arrive (Slack). Every other entity is a table we
+%% create; its columns trace to docs/specs/pnl-calculation.md and
+%% docs/specs/trader-ranking.md (FR numbers in the comments).
+erDiagram
+  SX_TRADE }|--|| POSITION : "grouped into"
+  SX_RESOLUTION |o--o{ POSITION : "resolves (by market)"
+  POSITION ||--o{ LOT : "holds"
+  SX_TRADE ||--o| LOT : "a buy creates"
+  WALLET_PNL ||--|{ POSITION : "totals"
+  WALLET_PNL ||--o| WALLET_METRICS : "ranked and described by"
+
+  SX_TRADE["SonarX trades (PENDING, inferred)"] {
+    text trade_key PK "PENDING: what identifies a trade"
+    text wallet_address "PENDING: proxy wallet"
+    text market_id "PENDING"
+    text outcome_token "PENDING: YES or NO"
+    text side "PENDING: buy or sell"
+    decimal price_per_share "PENDING"
+    decimal shares "PENDING"
+    int block_number "PENDING: chain order"
+    int position_in_block "PENDING: chain order"
+    timestamp traded_at "PENDING"
+  }
+  SX_RESOLUTION["SonarX resolutions (PENDING, inferred)"] {
+    text market_id PK "PENDING"
+    text resolved_outcome "PENDING"
+    decimal payout_per_share "PENDING"
+    timestamp resolved_at "PENDING"
+  }
+  POSITION {
+    text position_id PK "one per wallet, market, outcome token, as of time"
+    text wallet_address FK
+    text market_id FK
+    text outcome_token
+    timestamp as_of_time
+    text status "open or closed (FR-8 to FR-10)"
+    boolean is_incomplete "sell beyond lots (FR-5)"
+    decimal unmatched_shares "FR-5"
+    decimal realized_pnl "FR-7, FR-11"
+    decimal unrealized_pnl "FR-12, FR-13"
+  }
+  LOT {
+    text lot_id PK
+    text position_id FK
+    text buy_trade_key FK "the buy that made this lot"
+    decimal shares_bought "FR-3"
+    decimal price_per_share "FR-3"
+    decimal shares_remaining "after FIFO sales (FR-6)"
+  }
+  WALLET_PNL {
+    text wallet_address PK
+    timestamp as_of_time PK
+    decimal realized_pnl_total "FR-14"
+    decimal unrealized_pnl_total "FR-14"
+    decimal total_pnl "FR-14"
+    boolean is_incomplete "any position incomplete (FR-15)"
+  }
+  WALLET_METRICS {
+    text wallet_address PK, FK
+    timestamp as_of_time PK, FK
+    decimal total_amount_spent "ranking FR-2"
+    decimal roi "empty if nothing spent (ranking FR-3)"
+    int pnl_rank "ranking FR-4, FR-5"
+    int roi_rank "empty if not eligible (ranking FR-6 to FR-8)"
+    decimal win_rate "ranking FR-12, FR-18"
+    decimal avg_entry_price "ranking FR-14"
+    decimal holding_days_mean "ranking FR-16"
+    decimal holding_days_median "ranking FR-16"
+    int open_positions "ranking FR-13"
+    int incomplete_positions "ranking FR-13"
+    text primary_category "ranking FR-15"
+  }

@@ -1,0 +1,6 @@
+%% Figure 1: Level 0 (context) DFD. Editable source for dfd-level0.png.
+%% Rounded boxes are external entities; 0.0 is the whole system as one process.
+flowchart LR
+  sx([SonarX Snowflake<br/>Polygon data]) -->|Polymarket trades,<br/>market resolutions| p0[0.0 Polymarket PNL<br/>analytics system]
+  cl([SonarX client<br/>dashboard user]) -->|time window, wallet,<br/>sort and filter choices| p0
+  p0 -->|leaderboard, wallet PNL,<br/>positions, trading metrics| cl
