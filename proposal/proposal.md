@@ -93,27 +93,1024 @@ Each specification and design document is listed here with the objectives it ser
 
 The position matching and PNL specification, [`docs/specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), defines how trades become positions, how FIFO cost basis works, when a position is open or closed, and the realized and unrealized PNL formulas, with a worked example computed by hand. It serves Objective 1.2 and Objective 1.3. [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)")
 
+<!-- inline:begin docs/specs/pnl-calculation.md (copied by scripts/inline_docs.py: edit docs/specs/pnl-calculation.md, then rerun the script) -->
+
+### Specification — Position matching and PNL calculation
+
+Epic: #24 · Stories: #26, #27 · Task: #55
+Owner: Bryan Orozco · Sprint: 2 · Status: draft
+
+*How the system turns a proxy wallet's Polymarket trades into positions,
+decides whether each position is open or closed, and computes realized and
+unrealized profit and loss (PNL). The prototype code for #26 and #27 is
+tested against this document, and the validation in #28 checks it.*
+
+The two objectives it serves, quoted from proposal §2:
+
+Objective 1.2: Associate each wallet's transactions with their market
+resolution in order to determine whether each position is open or closed.
+
+Objective 1.3: Compute the realized PNL for closed positions and the
+unrealized PNL for open positions for each proxy wallet.
+
+**Scope**
+
+**In scope.** Proxy wallets only (Phase 1). Trades and market resolutions
+from SonarX's Polygon data in Snowflake over the last 12 months, the Phase 1
+window our mentor set on Oct 20, 2026
+([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20#issuecomment-6330393347)).
+Grouping trades into positions, FIFO cost basis, open or closed status,
+realized PNL, unrealized PNL, and wallet totals.
+
+**Out of scope.** Linking proxy wallets to their owner (EOA) wallets, which is
+Phase 2 and future work. Real time data. Ranking, return on investment and
+trading behavior metrics, which belong to `docs/specs/trader-ranking.md`
+(#54). Which tables and columns hold each field, which belongs to
+`docs/specs/data-sources.md` (#25). How the dashboard shows any of this (#33).
+
+***Pipeline steps***
+
+The pipeline has six numbered steps. The data flow diagrams in
+`docs/design/data-flow.md` (#58) number their processes the same way
+(process 1.0 is step 1), so a process in a diagram and a step here always
+mean the same thing.
+
+| Step | Name | Defined in |
+|---|---|---|
+| 1 | Extract trades and market resolutions | `docs/specs/data-sources.md` (#25) |
+| 2 | Build positions and cost basis lots | this document, FR-1 to FR-7 |
+| 3 | Match positions to resolutions and set status | this document, FR-8 to FR-10 |
+| 4 | Compute realized and unrealized PNL | this document, FR-11 to FR-15 |
+| 5 | Rank wallets and compute trading metrics | `docs/specs/trader-ranking.md` (#54) |
+| 6 | Serve results to the dashboard | dashboard documents (#33) |
+
+**Definitions**
+
+| Term | Meaning in this project |
+|---|---|
+| Proxy wallet | The wallet address that holds a Polymarket user's shares and appears on chain as the trader. Phase 1 computes PNL per proxy wallet. |
+| EOA | Externally owned account: the owner wallet behind one or more proxy wallets. Phase 2 only. |
+| Outcome token | One side of a market, such as YES or NO. Each outcome token is traded separately. |
+| Trade | One fill in which a proxy wallet buys or sells shares of one outcome token at one price per share. |
+| Position | All of one proxy wallet's shares in one outcome token of one market. |
+| Lot | The shares from one buy, with the price per share paid. FIFO consumes lots oldest first. |
+| Cost basis | What the shares still held cost, taken from the lots that remain. |
+| FIFO cost basis | First in, first out: a sale is matched against the oldest lot first, at the price paid for it (FR-6). |
+| Payout per share | What one share of an outcome token is worth once its market resolves, taken from the resolution data. A winning share pays 1.00 and a losing share 0.00 [1]. |
+| Latest price | The price of the most recent trade in an outcome token at or before the as of time. |
+| As of time (T) | The moment the calculation describes. Everything after T is ignored. |
+| Realized PNL | Profit or loss that is locked in, from a sale or from the market resolving. |
+| Unrealized PNL | Profit or loss on shares still held in a market that has not resolved, marked at the latest price. |
+
+**Functional requirements**
+
+Written in EARS form ("when a trigger happens, the system shall respond") so each
+one becomes a test almost verbatim. FR-6 and FR-7 apply FIFO, the cost basis
+our mentor set as the default on Oct 20, 2026
+([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20#issuecomment-6330393347)).
+
+| ID | Requirement | Story |
+|---|---|---|
+| FR-1 | When trades are loaded, the system shall group them into one position per proxy wallet, market and outcome token, so a wallet holding both YES and NO in one market has two positions. | #26 |
+| FR-2 | When the system processes a position, it shall apply that position's trades in chain order: earlier block first, and within a block, earlier position in the block first. | #26 |
+| FR-3 | When a trade is a buy, the system shall add a lot with the shares bought and the price per share paid. | #26 |
+| FR-4 | When a trade is a sell, the system shall remove the sold shares from the position's lots under FR-6. | #26 |
+| FR-5 | When a sell is for more shares than the position's lots hold, the system shall match only the shares that are held, mark the position as incomplete, and record how many shares were unmatched. | #26 |
+| FR-6 | When a sale is matched, the system shall take shares from the oldest remaining lot first, and move to the next oldest lot only when the current one is empty. | #27 |
+| FR-7 | When shares from a lot are sold, the system shall add (sale price − lot price) × shares sold from that lot to the position's realized PNL. | #27 |
+| FR-8 | When a position's market has a resolution at or before T, the system shall mark the position closed. | #26 |
+| FR-9 | When a position's market has no resolution at or before T and its lots hold zero shares, the system shall mark the position closed. | #26 |
+| FR-10 | When a position's market has no resolution at or before T and its lots hold more than zero shares, the system shall mark the position open. | #26 |
+| FR-11 | When a position's market resolves at or before T, the system shall add (payout per share − lot price) × shares for every lot still held to the position's realized PNL, using the payout per share from the resolution data. | #27 |
+| FR-12 | When a position is open, the system shall set its unrealized PNL to the sum over its remaining lots of (latest price − lot price) × shares. | #27 |
+| FR-13 | When a position is closed, the system shall set its unrealized PNL to zero. | #27 |
+| FR-14 | When wallet totals are requested, the system shall report the sum of realized PNL, the sum of unrealized PNL, and their total, across all of the wallet's positions. | #27 |
+| FR-15 | When any position in a wallet is incomplete under FR-5, the system shall flag the wallet's totals as incomplete. | #27 |
+
+FR-5 exists because the window starts 12 months back. A wallet that bought
+before the window and sold inside it has no lot to match against, and
+inventing a cost for those shares would make its PNL look certain when it is
+not.
+
+FR-8 closes a position when its market resolves, whether or not the wallet
+has redeemed its winning shares yet. Redemption turns shares into cash; it
+does not change what the position earned. Polymarket describes winning
+shares as redeemable for 1.00 each once the outcome is final [1].
+
+***PNL formulas***
+
+For a position, with lots *i* still held after all sales:
+
+```
+realized PNL   = Σ over sales  (sale price − lot price) × shares taken from that lot
+               + Σ over lots i (payout per share − price_i) × shares_i      if resolved by T
+unrealized PNL = Σ over lots i (latest price − price_i) × shares_i          if open at T
+               = 0                                                          if closed at T
+total PNL      = realized PNL + unrealized PNL
+```
+
+Unrealized PNL is marked at the latest market price, as our mentor set
+([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20#issuecomment-6330393347)).
+
+***Worked example, computed by hand***
+
+A made up proxy wallet **W** with two positions. Prices are per share.
+
+**Position A: W holds YES in market M1.**
+
+| Time | Trade | Shares | Price | Lots after the trade |
+|---|---|---|---|---|
+| t1 | buy | 100 | 0.40 | L1: 100 @ 0.40 |
+| t2 | buy | 50 | 0.60 | L1: 100 @ 0.40, L2: 50 @ 0.60 |
+| t3 | sell | 120 | 0.70 | L2: 30 @ 0.60 |
+
+The sale at t3 takes all 100 shares of L1, then 20 shares of L2 (FR-6):
+
+| From | Shares | Calculation | Realized |
+|---|---|---|---|
+| L1 | 100 | (0.70 − 0.40) × 100 | 30.00 |
+| L2 | 20 | (0.70 − 0.60) × 20 | 2.00 |
+| **Sale total** | 120 | | **32.00** |
+
+The cost basis method changes the answer: an average cost method prices all
+150 shares at 70.00 ÷ 150 = 0.4667, so the same sale would realize
+(0.70 − 0.4667) × 120 = 28.00 instead of 32.00.
+
+What happens next depends on M1 at the as of time T:
+
+| Case at T | Status | Realized | Unrealized | Total |
+|---|---|---|---|---|
+| M1 unresolved, latest YES price 0.55 | open (FR-10) | 32.00 | (0.55 − 0.60) × 30 = −1.50 | 30.50 |
+| M1 resolved YES, payout 1.00 | closed (FR-8) | 32.00 + (1.00 − 0.60) × 30 = 44.00 | 0.00 | 44.00 |
+
+Cash check for the resolved case: W paid 40.00 + 30.00 = 70.00, received
+84.00 from the sale and 30 × 1.00 = 30.00 at resolution, so it ends 44.00
+ahead, which matches.
+
+**Position B: W holds NO in market M2.** W buys 200 NO shares at 0.25 (cost
+50.00). M2 resolves YES, so NO pays 0.00: realized PNL is
+(0.00 − 0.25) × 200 = −50.00, unrealized is 0.00, and the position is closed.
+
+**Wallet W totals (FR-14):**
+
+| Case for M1 | Realized | Unrealized | Total |
+|---|---|---|---|
+| M1 unresolved | 32.00 − 50.00 = −18.00 | −1.50 | −19.50 |
+| M1 resolved YES | 44.00 − 50.00 = −6.00 | 0.00 | −6.00 |
+
+**Non-functional requirements**
+
+| ID | Requirement | Why it matters here |
+|---|---|---|
+| NFR-1 | Running the calculation twice on the same trades, resolutions and T gives identical results. | #25 asks a teammate to rerun our work and match it, and #28 compares our numbers against outside sources; neither works if results drift. |
+| NFR-2 | Prices, shares and PNL are held as exact decimals, never binary floating point, and are rounded only when displayed. | PNL sums thousands of small differences such as 0.70 − 0.60; floating point error adds up across a 12 month window. |
+| NFR-3 | Every realized or unrealized figure can be traced back to the trades and lots that produced it. | #28 must explain any discrepancy with an outside source, which means showing the trades behind a number. |
+
+**Acceptance criteria (epic level)**
+
+- [ ] The prototype reproduces the worked example exactly, as tests that
+      each fail if FR-6, FR-7, FR-8, FR-10, FR-11 or FR-12 is removed.
+- [ ] A position with a sell larger than its lots is marked incomplete
+      (FR-5), with a test.
+- [ ] Every functional requirement cites #26 or #27, and every open
+      question below has an owner.
+- [ ] This document is listed in proposal §4 under Specification and design
+      documents.
+
+**Open questions**
+
+| Question | Owner | Needed by |
+|---|---|---|
+| Q1. Should positions marked incomplete (FR-5) be left out of the leaderboard, shown with a warning, or fixed by loading earlier trades for those wallets only? (ask Erel) | Bryan Orozco | before ranking work in #30 |
+| Q2. Do SonarX's Polymarket tables record trading fees per trade? If they do, realized PNL subtracts them; if not, we report PNL before fees and say so. (ask Sergio) | Bryan Orozco | before #27 is implemented |
+| Q3. Which table and column give the latest price for an outcome token, and how fresh is it? (ask Sergio) | Bryan Orozco | before #27 is implemented |
+| Q4. Besides buys and sells, which events change a wallet's shares in the data (for example splitting collateral into a YES and NO pair, merging a pair back, redeeming after resolution, or transfers between wallets), and how does each appear? Each needs its own requirement before #26 is built. (ask Sergio) | Bryan Orozco | before #26 is implemented |
+| Q5. Can a market resolve with a payout per share other than 1.00 or 0.00? FR-11 already reads the payout from the data, so this only changes the test cases. (ask Sergio) | Bryan Orozco | before #27 tests |
+| Q6. What tolerance between our PNL and the Polymarket leaderboard counts as a match? Our mentor said to set it together after a first pass. (ask Erel) | Bryan Orozco | before #28 |
+
+**Sources**
+
+[1] Polymarket. Polymarket 101. Polymarket Documentation.
+https://docs.polymarket.com/polymarket-101 (accessed Oct. 24, 2026).
+
+<!-- inline:end docs/specs/pnl-calculation.md -->
+
 The trader ranking and behavior specification, [`docs/specs/trader-ranking.md`](../docs/specs/trader-ranking.md), defines how proxy wallets are ranked by total PNL and by return on investment (including the minimum activity rule and the tie breaks), and how win rate, average entry price, market categories traded, and position holding period are calculated, with a worked example computed by hand. It serves Objective 2.1 and Objective 2.2. [[task:#54]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/54 "Draft docs/specs/trader-ranking.md (Goal 2 definitions)")
+
+<!-- inline:begin docs/specs/trader-ranking.md (copied by scripts/inline_docs.py: edit docs/specs/trader-ranking.md, then rerun the script) -->
+
+### Specification — Trader ranking and trading behavior metrics
+
+Epic: #29 · Stories: #30, #31 · Task: #54
+Owner: Justin Cox · Sprint: 2 · Status: draft
+
+*How the system ranks proxy wallets by profitability and describes how each
+ranked wallet trades. It takes the per position results of the position
+matching and PNL specification (#55, "the position spec") and turns them into
+two rankings (#30) and four trading behavior metrics (#31). The prototype
+code for #30 and #31 is tested against this document, and the validation in
+#28 checks it. The rules and definitions here are written by the team for this
+project; they are not copied from an outside standard.*
+
+The two objectives it serves, quoted from proposal §2:
+
+Objective 2.1: Compute the PNL and return on investment for each proxy
+wallet and produce a leaderboard of the most profitable traders.
+
+Objective 2.2: Analyze the trading behaviors of each ranked wallet,
+including win rate, average entry price, market categories traded, and
+position holding period.
+
+**Scope**
+
+**In scope.** Proxy wallets only (Phase 1). The same 12 month window as the
+position spec, set by our mentor on Oct 20, 2026
+([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20#issuecomment-6330393347)).
+Wallet total PNL, return on investment (ROI), the minimum activity rule, two
+rankings (one by total PNL and one by ROI) with a written tie break for each,
+and the four metrics: win rate, average entry price, market categories
+traded, and position holding period.
+
+**Out of scope.** How positions, lots and PNL are computed, which belongs to
+the position spec (#55). Linking proxy wallets to their owner (EOA) wallets,
+which is Phase 2 and future work. Real time data. Which tables and columns
+hold each field, which belongs to `docs/specs/data-sources.md` (#25). How the
+dashboard shows the rankings or the metrics (#33).
+
+***Pipeline steps***
+
+This document defines step 5. The numbering is the one used in the position
+spec and in the data flow diagrams in `docs/design/data-flow.md` (#58): a
+process in a diagram and a step here always mean the same thing.
+
+| Step | Name | Defined in |
+|---|---|---|
+| 1 | Extract trades and market resolutions | `docs/specs/data-sources.md` (#25) |
+| 2 | Build positions and cost basis lots | position spec (#55), FR-1 to FR-7 |
+| 3 | Match positions to resolutions and set status | position spec (#55), FR-8 to FR-10 |
+| 4 | Compute realized and unrealized PNL | position spec (#55), FR-11 to FR-15 |
+| 5 | Rank wallets and compute trading metrics | this document, FR-1 to FR-18 |
+| 6 | Serve results to the dashboard | dashboard documents (#33) |
+
+Step 5 reads only the output of step 4 (each position's status, realized PNL,
+unrealized PNL and incomplete flag) plus the trades behind it. It does not
+recompute PNL.
+
+**Definitions**
+
+Terms the position spec already defines (proxy wallet, outcome token, trade,
+position, lot, closed and open, as of time T, realized PNL, unrealized PNL)
+keep the same meaning here. The terms below are new.
+
+| Term | Meaning in this project |
+|---|---|
+| Incomplete position | A position flagged under position spec FR-5: it sold more shares than its lots held, so part of its PNL could not be matched. |
+| Incomplete wallet | A wallet flagged under position spec FR-15: at least one of its positions is incomplete. |
+| Window | The 12 month period ending at T. Only trades inside it are used. |
+| Total PNL | A wallet's realized PNL plus its unrealized PNL, summed across all its positions. |
+| Total amount spent | What the wallet spent on every buy in the window: Σ shares × price per share. It counts buys whose shares were later sold or are still held. |
+| Return on investment (ROI) | Total PNL divided by total amount spent. |
+| PNL ranking | All wallets ordered by total PNL, highest first (FR-4, FR-5). |
+| ROI ranking | Eligible wallets ordered by ROI, highest first (FR-7, FR-8). |
+| Eligible wallet | A wallet that meets every threshold of the minimum activity rule (FR-6). Only eligible wallets appear in the ROI ranking. |
+| Ranked wallet | A wallet in the top N of the PNL ranking or the ROI ranking. The metrics are computed for every ranked wallet (FR-11). |
+| Winning position | A closed position whose realized PNL is greater than zero. |
+| Entry price | The price per share paid on a buy. Every share is priced between 0.00 and 1.00, and the price reflects the market's belief in the probability of that outcome [1]. |
+| Category | The label that groups markets by topic, taken from the market data (Q3 asks where it comes from). |
+| Holding period | The time from a position's first buy to the moment it closes, in days. |
+
+***Minimum activity thresholds***
+
+Starting values, kept in configuration and printed with every ranking
+(FR-9). Q2 asks our mentor to confirm them.
+
+| Threshold | Starting value |
+|---|---|
+| Distinct markets traded in the window | at least 10 |
+| Trades (buys and sells) in the window | at least 30 |
+| Total amount spent | at least 1,000 USD |
+| Ranking size N (each ranking) | 100 |
+
+**Functional requirements**
+
+Written in EARS form ("when a trigger happens, the system shall respond") so each
+one becomes a test almost verbatim. FR-1 to FR-10 serve #30 and FR-11 to FR-18
+serve #31.
+
+| ID | Requirement | Story |
+|---|---|---|
+| FR-1 | When the ranking runs for as of time T, the system shall set each wallet's total PNL to the sum of realized PNL and unrealized PNL across all of the wallet's positions, as computed by the position spec. | #30 |
+| FR-2 | When the ranking runs, the system shall set each wallet's total amount spent to the sum of shares × price per share over every buy by the wallet in the window. | #30 |
+| FR-3 | When a wallet's total amount spent is greater than zero, the system shall set its ROI to total PNL ÷ total amount spent; when it is zero, the system shall leave ROI empty. | #30 |
+| FR-4 | When the PNL ranking is built, the system shall order all wallets by total PNL from highest to lowest, so rank 1 is the highest total PNL and wallets with negative total PNL rank below all wallets with positive total PNL. | #30 |
+| FR-5 | When two wallets have the same total PNL, compared to the cent (0.01 USD), the system shall order them by higher ROI (a wallet with empty ROI after one with a value), then higher total amount spent, then earlier first trade in the window, then lower wallet address in alphabetical order, so every wallet gets a distinct rank. | #30 |
+| FR-6 | When the ROI ranking is built, the system shall leave out any wallet that has fewer than the threshold number of distinct markets, trades or total amount spent. The PNL ranking is not filtered by this rule. | #30 |
+| FR-7 | When the ROI ranking is built, the system shall order the eligible wallets by ROI from highest to lowest. | #30 |
+| FR-8 | When two eligible wallets have the same ROI, compared to four decimal places (0.01 percentage points), the system shall order them by higher total PNL, then higher total amount spent, then earlier first trade in the window, then lower wallet address in alphabetical order, so every wallet gets a distinct rank. | #30 |
+| FR-9 | When the ranking runs, the system shall return the top N wallets of each ranking and print the thresholds and N used. | #30 |
+| FR-10 | When a wallet is incomplete, the system shall carry the incomplete flag onto its row in every ranking it appears in. | #30 |
+| FR-11 | When the metrics run, the system shall output win rate, average entry price, market categories traded and holding period for every ranked wallet. | #31 |
+| FR-12 | When the win rate of a wallet is requested, the system shall report the number of winning positions divided by the number of closed positions that are not incomplete. | #31 |
+| FR-13 | When a position is open or incomplete, the system shall leave it out of the win rate and the holding period statistics, and report the number of open positions and the number of incomplete positions for the wallet. | #31 |
+| FR-14 | When the average entry price of a wallet is requested, the system shall report Σ (shares × price per share) ÷ Σ shares over every buy by the wallet in the window, ignoring sells. | #31 |
+| FR-15 | When the market categories of a wallet are requested, the system shall report each category traded, the share of the wallet's total amount spent in that category, the total PNL in that category, and the primary category (the one with the largest share of total amount spent). A market with no category is reported as `Uncategorized`. | #31 |
+| FR-16 | When the holding period of a wallet is requested, the system shall set each closed position's holding period to its close time minus its first buy time, where the close time is the time of the trade that took the lots to zero shares or, if the market resolved first, the resolution time, and report the average (mean) and the median over those positions in days. | #31 |
+| FR-17 | When an open position is reported, the system shall report its age as T minus its first buy time, separately from the holding period of closed positions. | #31 |
+| FR-18 | When a metric has nothing to divide or average (no closed positions, or no buys), the system shall report it as empty, never as zero. | #31 |
+
+FR-6 exists so that one lucky bet on a nearly empty wallet cannot take the top
+of the ROI ranking: ROI is a ratio, and a ratio over a tiny amount spent is
+easy to inflate. Total PNL is a dollar amount, so FR-4 leaves the PNL ranking
+unfiltered; Q2 asks whether that is right. FR-13 leaves incomplete positions
+out of the win rate and the holding period because their PNL and first buy
+time are partly unknown when the window starts after the wallet began
+trading, the same reason position spec FR-5 flags them. Q1 asks whether
+incomplete wallets should be ranked at all.
+
+FR-14 always gives a number between 0 and 1, because every share is priced
+between 0.00 and 1.00 and the price reflects the market's belief in the
+probability of the outcome [1]. Read that way, it is the average probability
+the market gave the outcomes the wallet bought, weighted by shares.
+
+FR-18 matters because an empty win rate and a 0% win rate say different
+things: the first means no evidence, the second means every closed position
+lost.
+
+***Formulas***
+
+For a wallet, over the window ending at T:
+
+```
+total PNL          = Σ over positions (realized PNL + unrealized PNL)
+total amount spent = Σ over buys (shares × price per share)
+ROI                = total PNL ÷ total amount spent                 if total amount spent > 0
+
+win rate           = winning positions ÷ closed positions that are not incomplete
+avg entry price    = Σ over buys (shares × price) ÷ Σ over buys (shares)
+category share     = amount spent in category ÷ total amount spent
+holding period     = close time − first buy time                    per closed position
+```
+
+Ranking orders:
+
+```
+PNL ranking (all wallets)          ROI ranking (eligible wallets only)
+1. total PNL, highest first        1. ROI, highest first
+2. ROI, highest first              2. total PNL, highest first
+3. total amount spent, highest     3. total amount spent, highest
+4. first trade, earliest first     4. first trade, earliest first
+5. wallet address, alphabetical    5. wallet address, alphabetical
+```
+
+***Worked example, computed by hand***
+
+**Ranking.** Five made up wallets at the same T, with the starting thresholds.
+Wallet W is the one from the position spec's worked example, where M1 has
+resolved YES (total PNL −6.00, total amount spent 70.00 + 50.00 = 120.00,
+4 trades in 2 markets).
+
+| Wallet | Markets | Trades | Total amount spent | Total PNL | ROI | PNL rank | Eligible | ROI rank |
+|---|---|---|---|---|---|---|---|---|
+| X | 12 | 40 | 5,000.00 | 1,000.00 | 20.0% | 2 | yes | 2 |
+| Y | 15 | 60 | 2,000.00 | 1,000.00 | 50.0% | 1 | yes | 1 |
+| Z | 3 | 8 | 400.00 | 900.00 | 225.0% | 3 | no | none |
+| W | 2 | 4 | 120.00 | −6.00 | −5.0% | 4 | no | none |
+| V | 20 | 100 | 8,000.00 | −200.00 | −2.5% | 5 | yes | 3 |
+
+- X and Y tie on total PNL at 1,000.00. FR-5 breaks the tie on ROI:
+  Y at 1,000 ÷ 2,000 = 50.0% beats X at 1,000 ÷ 5,000 = 20.0%.
+- Z has the highest ROI of all five, but fails all three thresholds
+  (3 < 10 markets, 8 < 30 trades, 400 < 1,000 spent), so FR-6 keeps it out of
+  the ROI ranking. It still ranks 3rd on total PNL, because FR-4 is not
+  filtered. W fails the same way.
+- W, at −6.00, ranks above V at −200.00 on total PNL, because a smaller loss
+  is a higher number.
+
+**Metrics for wallet W.** From the position spec: position A is YES in M1
+(buys 100 @ 0.40 and 50 @ 0.60, then a sale of 120 @ 0.70), and position B is
+NO in M2 (buy 200 @ 0.25, M2 resolves YES). Added for this example, both
+made up: M1 is in category Politics and M2 in Crypto; A's first buy is on
+2026-01-10 and M1 resolves 2026-03-01; B's buy is on 2026-02-01 and M2
+resolves 2026-02-21; T is 2026-04-01.
+
+| Metric | Calculation | Result |
+|---|---|---|
+| Total amount spent | (100 × 0.40) + (50 × 0.60) + (200 × 0.25) = 40 + 30 + 50 | 120.00 |
+| Total PNL (M1 resolved) | 44.00 + (−50.00) | −6.00 |
+| ROI | −6.00 ÷ 120.00 | −5.0% |
+| Win rate | A wins (44.00 > 0), B loses (−50.00); 1 ÷ 2 | 50% |
+| Average entry price | 120.00 ÷ (100 + 50 + 200) = 120 ÷ 350 | 0.3429 |
+| Category share of total amount spent | Politics 70 ÷ 120, Crypto 50 ÷ 120 | 58.3%, 41.7% |
+| PNL by category | Politics 44.00, Crypto −50.00 | primary: Politics |
+| Holding period | A: 2026-01-10 to 2026-03-01 = 50 days; B: 2026-02-01 to 2026-02-21 = 20 days | average 35, median 35 days |
+
+Cash check on the average entry price: the three buys cost 120.00 for 350
+shares, and 120 ÷ 350 = 0.342857, which rounds to 0.3429.
+
+If M1 had not resolved by T (latest YES price 0.55), A would be open
+(position spec FR-10) and the metrics change as follows:
+
+| Metric | Result | Why |
+|---|---|---|
+| Total PNL | −19.50 | 32.00 − 1.50 − 50.00 |
+| ROI | −16.25% | −19.50 ÷ 120.00 |
+| Win rate | 0% (0 of 1) | A is open and leaves the win rate (FR-13); only B counts, and it lost |
+| Holding period | average 20, median 20 days | only B counts (FR-13) |
+| Open positions | 1 | A, reported separately with its age at T (FR-17) |
+| Average entry price | 0.3429 | unchanged: it uses buys only (FR-14) |
+
+**Non-functional requirements**
+
+| ID | Requirement | Why it matters here |
+|---|---|---|
+| NFR-1 | Running the ranking twice on the same positions, trades and T gives the same ranks in the same order. | The tie breaks in FR-5 and FR-8 go down to the wallet address so no ties are left to chance; #28 compares our rankings against outside sources and a shifting order would hide real differences. |
+| NFR-2 | PNL, shares, prices and ratios are held as exact decimals, never binary floating point, and are rounded only when displayed and for the tie comparisons in FR-5 and FR-8. | ROI and win rate are divisions of sums; rounding early can swap two close wallets. |
+| NFR-3 | Every ranking row and metric can be traced back to the positions and trades that produced it. | #28 must explain any gap with an outside leaderboard, which means showing the positions behind a rank. |
+| NFR-4 | Every ranking output states the as of time, the window, the thresholds and N it was run with. | A ranking cannot be compared or rerun without them. |
+
+**Acceptance criteria (epic level)**
+
+- [ ] The prototype reproduces both worked examples exactly, as tests that
+      each fail if FR-3, FR-4, FR-5, FR-6, FR-7, FR-8, FR-12, FR-13, FR-14,
+      FR-15 or FR-16 is removed.
+- [ ] A wallet below any one threshold is left out of the ROI ranking but
+      still appears in the PNL ranking, with a test (wallet Z).
+- [ ] Running the ranking twice on the same data gives the same order in both
+      rankings, with a test (NFR-1).
+- [ ] A metric with nothing to divide is reported as empty rather than zero
+      (FR-18), with a test.
+- [ ] The metrics for at least 3 wallets match a hand calculation by a
+      teammate who did not write the code.
+- [ ] Every functional requirement cites #30 or #31, and every open question
+      below has an owner.
+- [ ] This document is listed in proposal §4 under Specification and design
+      documents.
+
+**Open questions**
+
+| Question | Owner | Needed by |
+|---|---|---|
+| Q1. Should incomplete wallets (position spec Q1) be left out of the rankings, ranked with a warning, or ranked only after earlier trades are loaded for them? FR-10 only carries the flag for now. (ask Erel) | TBD | before ranking work in #30 |
+| Q2. Are the starting thresholds (10 markets, 30 trades, 1,000 USD) and N = 100 right for the data we have? Should the minimum activity rule also apply to the PNL ranking? #30 names only the ROI ranking, so this draft leaves the PNL ranking unfiltered. (ask Erel) | TBD | before #30 is implemented |
+| Q3. Which table and column give a market's category, does a market ever have more than one, and which one counts if so? FR-15 assumes one category per market. (ask Sergio) | TBD | before #31 is implemented |
+| Q4. Should holding period be measured per position (first buy to close, as in FR-16) or per lot under FIFO? A wallet that keeps adding to a position gets a longer period per position than per lot. (ask Erel) | TBD | before #31 tests |
+| Q5. Which wallets are "ranked wallets" for #31? FR-11 uses the top N of either ranking; the alternative is the PNL ranking only. (ask Erel) | TBD | before #31 is implemented |
+| Q6. If SonarX has no trading fees (position spec Q2), total PNL and ROI are before fees. Do we say that on the rankings themselves or only in this document? (ask Sergio) | TBD | before #33 |
+| Q7. Polymarket's documentation says trades use pUSD as collateral [1]. Which collateral token do trades in our 12 month window use, and can its amounts be treated as dollars one for one? This document writes amounts in USD. (ask Sergio) | TBD | before #30 is implemented |
+
+**Sources**
+
+[1] Polymarket. Polymarket 101. Polymarket Documentation.
+https://docs.polymarket.com/polymarket-101 (accessed Oct. 26, 2026).
+
+<!-- inline:end docs/specs/trader-ranking.md -->
 
 The dashboard question list, [`docs/specs/dashboard-questions.md`](../docs/specs/dashboard-questions.md), holds the questions SonarX clients want the dashboard to answer, the data behind each one, and the page that answers it. It serves Objective 3.1. [[task:#123]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/123 "Draft docs/specs/dashboard-questions.md from Erel's starting client questions")
 
+<!-- inline:begin docs/specs/dashboard-questions.md (copied by scripts/inline_docs.py: edit docs/specs/dashboard-questions.md, then rerun the script) -->
+
+### Dashboard Questions (Objective 3.1, #34)
+
+**Status:** Draft, awaiting mentor approval
+**Parent:** Goal 3 (#33)
+**Related:** Performance requirement in #37
+
+**1. Purpose**
+
+This document lists the questions clients want the PNL dashboard to answer. For each question it names the data that answers it and the dashboard page that presents it. No interface design is merged until the mentor has approved this list (see Section 6).
+
+**2. Dashboard pages**
+
+| Page | Purpose |
+|------|---------|
+| **P1. Trader Leaderboard** | Rank wallets by PNL over a selectable time window |
+| **P2. Trader Profile** | Drill-down on a single wallet: PNL history, positions, trades |
+| **P3. Markets & Strategies** | Break down returns by market, category, and strategy |
+| **P4. Early Movers** | Identify wallets that are consistently early on winning outcomes |
+
+**3. Client questions**
+
+Source column: **Mentor** = from mentor guidance (#20), **Proposed** = added by the team for mentor review.
+
+| ID | Question | Data that answers it | Page | Source |
+|----|----------|----------------------|------|--------|
+| Q1 | Who are the most profitable traders over a given window? | Per-wallet realized PNL, unrealized PNL, total PNL, return on investment (ROI), and win rate (share of closed positions that were profitable), aggregated over the selected date range; trade timestamps | P1 | Mentor |
+| Q2 | What markets and strategies drive their returns? | Per-wallet PNL grouped by market, market category, and strategy label; position sizes and holding periods | P3 (linked from P2) | Mentor |
+| Q3 | Which wallets are consistently early on winning outcomes? | Entry timestamp and entry price per position vs. market open, price path, and resolution time; resolved outcome per position | P4 | Mentor |
+| Q4 | How consistent is a trader's profitability, or is it driven by a few big wins? | Per-position PNL distribution, win rate, PNL by period, largest-win share of total PNL | P2 | Proposed |
+| Q5 | How much capital does a trader deploy, and what return do they earn on it? | Position sizes, capital at risk over time, PNL divided by capital deployed | P1, P2 | Proposed |
+| Q6 | How does a trader's PNL change over time? | Cumulative realized and unrealized PNL time series per wallet | P2 | Proposed |
+| Q7 | What is a trader currently holding, and how much is unrealized? | Open positions, current mark price, unrealized PNL, linked market resolution date | P2 | Proposed |
+| Q8 | Which markets or categories are the most profitable for traders overall? | PNL and volume aggregated across all wallets by market and category | P3 | Proposed |
+
+**4. Definitions to settle with the mentor**
+
+These affect how questions are answered, so they need a decision before design starts.
+
+1. **Profitable.** Ranked by total PNL, realized-only PNL, or return on capital? Is there a minimum trade count or volume so tiny wallets do not top the board?
+2. **Early (Q3).** Measured as time before resolution, time since market open, or price moved in the trader's favor after entry? What threshold counts as "consistently"?
+3. **Strategy (Q2).** Which labels do we derive from on-chain data (for example holding period, market category, position sizing, or buying the favorite vs. the underdog)?
+4. **Time windows.** Which presets (7d, 30d, 90d, all-time) plus custom range?
+5. **Unrealized PNL.** What mark price do we use for open positions?
+
+**5. Non-functional requirement**
+
+Main views (P1 to P4) should load within a few seconds, per mentor guidance and #37. Questions that require heavy aggregation (Q1, Q3) may need precomputed tables. Confirm the specific target in #37.
+
+**6. Approval**
+
+The mentor approves this finished list before any interface design is merged.
+
+- [ ] Mentor approved
+- **Approver:** Erel Saul
+- **Date:**
+- **Evidence:** (link to meeting notes or PR/issue comment)
+
+**7. Change log**
+
+| Date | Change | Author |
+|------|--------|--------|
+| October 26, 2026 | Initial draft | Leila De Belen |
+
+<!-- inline:end docs/specs/dashboard-questions.md -->
+
 The architecture design, [`docs/design/architecture.md`](../docs/design/architecture.md), holds the high level architecture diagram and the system context diagram: SonarX's Snowflake data feeds the analysis, the analysis produces results, and the dashboard shows those results to its user. It serves Objectives 1.1, 2.1 and 3.2. [[task:#56]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/56 "Write docs/design/architecture.md with high level architecture and system context diagrams")
+
+<!-- inline:begin docs/design/architecture.md (copied by scripts/inline_docs.py: edit docs/design/architecture.md, then rerun the script) -->
+
+Epic: #24, #29, #33 · Stories: Writing Documentation for Architecture
+
+![Two diagrams side by side. System context: SonarX clients view the dashboard of our analytics system, which pulls trades from SonarX's Snowflake database and pushes results to the dashboard. High level architecture: SonarX's Snowflake database feeds pull trades, build positions, compute PNL and rank wallets; the results are stored and shown in the dashboard.](../docs/design/diagrams/architecture.png)\
+*Figure 1 — System context (left) and high level architecture (right). Editable source: [`architecture.mmd`](../docs/design/diagrams/architecture.mmd).*
+
+<!-- inline:end docs/design/architecture.md -->
 
 The prototype implementation and module diagram, [`docs/design/implementation.md`](../docs/design/implementation.md), displays how our prototype directory is structured, credential configuration, security, proposed structure for setup and testing, and proposed build order. It serves Objective 1.1. [[task:#61]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/61 "Write docs/design/implementation.md (module layout, configuration, build order)")
 
+<!-- inline:begin docs/design/implementation.md (copied by scripts/inline_docs.py: edit docs/design/implementation.md, then rerun the script) -->
+
+Epic: #24, #29, #33 · Stories: Implemtation Plan + Mermaid Diagram
+
+### Prototype Structure, Setup, and Implementation Plan
+
+**1. Purpose**
+
+The `prototype/` directory will contain the initial working implementation of EpicEngineers. It will provide a small, testable environment for validating the selected application stack, connecting to Snowflake, and demonstrating the core workflow before expanding into a complete application.
+
+**Dependency:** Implementation is blocked on the technology stack decision in [Issue #52](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52). The folder structure below is a proposed baseline. Framework-specific dependencies, commands, and configuration must be finalized after that decision.
+
+**2. Proposed Directory Structure**
+
+```text
+prototype/
+├── README.md
+├── .env.example
+├── .gitignore
+├── config/
+│   └── README.md
+├── src/
+│   ├── app/
+│   │   └── README.md
+│   ├── services/
+│   │   └── README.md
+│   ├── database/
+│   │   └── README.md
+│   └── config/
+│       └── README.md
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── fixtures/
+
+```
+
+The exact filenames and source directories may change based on the decision in Issue #52.
+
+***Directory responsibilities***
+
+- **`README.md`** — Documents prerequisites, environment setup, running the prototype, troubleshooting, and the implementation sequence.
+- **`.env.example`** — Lists required environment variable names and safe placeholder values. It must never contain actual credentials.
+- **`.gitignore`** — Prevents local environment files, secrets, virtual environments, dependency artifacts, caches, and generated files from being committed.
+- **`config/`** — Holds non-secret configuration documentation and configuration examples.
+- **`src/app/`** — Contains application entry points and the primary application workflow.
+- **`src/services/`** — Contains reusable business logic and operations independent of the user interface.
+- **`src/database/`** — Contains Snowflake connection handling and data-access logic, including queries or repository functions.
+- **`src/config/`** — Loads and validates environment variables and exposes application configuration.
+- **`tests/unit/`** — Tests individual functions and modules without requiring a live Snowflake connection.
+- **`tests/integration/`** — Tests interactions between components and, when credentials and access are available, Snowflake connectivity and queries.
+- **`tests/fixtures/`** — Contains synthetic test data and other non-sensitive test fixtures.
+- **`docs/architecture.md`** — Records architectural decisions, component responsibilities, data flow, and known limitations.
+
+Do not create unnecessary abstraction layers before the stack and initial requirements are confirmed. Keep the first working version small.
+
+**3. Configuration and Secret Management**
+
+***Security requirement***
+
+**Snowflake passwords must always be supplied through environment variables. Never hardcode passwords, commit them to the repository, or include them in logs, screenshots, error messages, or documentation.**
+
+The prototype must fail safely when required configuration is missing instead of silently using credentials embedded in source code.
+
+***Environment variables***
+
+The following names are proposed; confirm the required connection parameters against the selected Snowflake connector.
+
+| Variable | Purpose |
+|---|---|
+| `SNOWFLAKE_ACCOUNT` | Snowflake account identifier |
+| `SNOWFLAKE_USER` | Snowflake username |
+| `SNOWFLAKE_PASSWORD` | Snowflake password |
+| `SNOWFLAKE_WAREHOUSE` | Warehouse used for queries |
+| `SNOWFLAKE_DATABASE` | Target database |
+| `SNOWFLAKE_SCHEMA` | Target schema |
+| `SNOWFLAKE_ROLE` | Role used by the connection, if required |
+
+***Local setup***
+
+1. Install the runtime and dependency manager required by the selected stack.
+2. Copy `.env.example` to a local `.env` file, if the chosen framework supports this workflow.
+3. Enter the required configuration values locally. Obtain credentials through the team's approved secret-sharing process.
+4. Verify that `.env` is ignored by Git before entering any secrets.
+5. Install the project's dependencies using the commands documented for the selected stack.
+6. Run configuration validation and unit tests before attempting a database connection.
+
+The `.env.example` file should contain only placeholder values, for example:
+
+```dotenv
+SNOWFLAKE_ACCOUNT=your_account_identifier
+SNOWFLAKE_USER=your_username
+SNOWFLAKE_PASSWORD=
+SNOWFLAKE_WAREHOUSE=your_warehouse
+SNOWFLAKE_DATABASE=your_database
+SNOWFLAKE_SCHEMA=your_schema
+SNOWFLAKE_ROLE=your_role
+```
+
+The real `.env` file must remain local and untracked. If the selected deployment environment provides a secret manager or injects environment variables directly, use that mechanism instead of requiring a `.env` file.
+
+***Required Git protections***
+
+The `.gitignore` file should include at least:
+
+```gitignore
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Runtime artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+dist/
+build/
+coverage/
+.pytest_cache/
+```
+
+Adjust these patterns for the selected stack and any existing repository conventions. Before committing, inspect staged changes and verify that no credentials or sensitive configuration files are included.
+
+**4. How to Run the Prototype**
+
+The exact commands are intentionally deferred until Issue #52 establishes the stack.
+
+Once the decision is finalized, the `prototype/README.md` must provide a verified sequence covering:
+
+1. **Prerequisites:** Supported runtime version, dependency manager, and any required external accounts or permissions.
+2. **Installation:** Exact commands to install dependencies from the prototype directory.
+3. **Configuration:** How to supply environment variables and validate required settings.
+4. **Local execution:** The exact command to launch the application and the local URL or CLI invocation, as applicable.
+5. **Testing:** Commands for unit tests and integration tests, with clear instructions for tests requiring Snowflake access.
+6. **Troubleshooting:** Common setup failures, missing environment variables, authentication errors, and connectivity or permission issues.
+
+The first run should support a local smoke test without requiring live Snowflake credentials wherever practical. Database-dependent tests must clearly identify their prerequisites and must not run destructive operations against shared data.
+
+**5. Implementation Order**
+
+Build the prototype incrementally, validating each stage before moving on.
+
+***Phase 1 — Resolve the stack decision***
+
+- Resolve [Issue #52](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52).
+- Confirm the language, framework, dependency manager, Snowflake connector, and execution environment.
+- Record the selected stack and rationale.
+- Finalize the directory structure and runnable setup instructions.
+
+**Exit criterion:** The team agrees on the stack and can document a reproducible development environment.
+
+***Phase 2 — Establish the project foundation***
+
+- Create the prototype directory and essential files.
+- Add dependency and runtime configuration.
+- Add `.gitignore` and `.env.example`.
+- Implement environment-variable loading and validation.
+- Add a minimal application entry point and a basic unit-test setup.
+
+**Exit criterion:** A developer can install dependencies, validate configuration, and run a basic local test without exposing secrets.
+
+***Phase 3 — Implement Snowflake connectivity***
+
+- Configure the selected Snowflake client to read connection settings from environment variables.
+- Implement a small, reusable connection module.
+- Add safe error handling for missing settings, authentication failures, and connection timeouts.
+- Add unit tests using mocked connections.
+- Add an optional integration test that verifies connectivity and executes a harmless read-only query.
+
+**Exit criterion:** The connection can be tested independently, and no credentials are embedded in source code or printed in logs.
+
+***Phase 4 — Build the core data workflow***
+
+- Identify the minimum data required for the prototype.
+- Implement the necessary Snowflake queries and data-access functions.
+- Separate data-access logic from application or presentation logic.
+- Test the workflow with synthetic fixtures and, where available, approved test data.
+- Validate expected results and handle empty results and common query failures.
+
+**Exit criterion:** The core workflow returns the expected data and has repeatable tests.
+
+***Phase 5 — Build the application interface***
+
+- Implement the smallest interface or command-line workflow needed to demonstrate the core functionality.
+- Connect the interface to the service and data-access layers.
+- Add input validation, loading or execution feedback, and useful error messages.
+- Confirm that secrets and sensitive connection details are never exposed to users.
+
+**Exit criterion:** A developer can demonstrate the intended end-to-end prototype workflow.
+
+***Phase 6 — Validate and document***
+
+- Run all unit tests and applicable integration tests.
+- Test setup from a clean environment using the documented instructions.
+- Review Git changes for accidentally staged secrets.
+- Document architecture, limitations, and remaining work.
+- Record follow-up issues for features that are outside the prototype's scope.
+
+**Exit criterion:** Another team member can configure, run, test, and demonstrate the prototype using the README alone.
+
+**6. Development Principles**
+
+- **Security first:** Credentials come from environment variables or an approved secret-management mechanism.
+- **Incremental delivery:** Build and test one layer at a time rather than implementing the entire application at once.
+- **Separation of concerns:** Keep configuration, data access, business logic, and presentation independently testable.
+- **Reproducibility:** Document exact, verified commands and required software versions.
+- **Minimal scope:** Implement only the functionality needed to validate the prototype's core workflow.
+- **Safe database access:** Prefer read-only operations and approved test data during early development.
+- **Document decisions:** Update the architecture documentation when the team finalizes the stack or changes a major design choice.
+
+**7. Open Dependencies and Completion Criteria**
+
+The following remain dependent on Issue #52:
+
+- Selected language and framework.
+- Dependency installation and application launch commands.
+- Snowflake connector and authentication mechanism.
+- Final module layout and framework-specific configuration.
+- Deployment and environment-specific setup.
+
+The prototype foundation is ready for implementation when the stack decision is recorded, the setup is reproducible, secret handling is verified, and the team has agreed on the minimum end-to-end workflow.
+
+The prototype is ready for demonstration when that workflow runs successfully, the applicable tests pass, and another developer can follow the documented setup without needing undocumented steps.
+
+**8. Implementation Diagram**
+
+![Prototype modules: the user reaches the application interface, which calls services, which call database access, which reads the Snowflake database. Configuration supplies environment variables and connection settings. Unit tests and integration tests, fed by test fixtures, check the modules.](../docs/design/diagrams/implementation.png)\
+*Figure 2 — Prototype module diagram. Editable source: [`implementation.mmd`](../docs/design/diagrams/implementation.mmd).*
+
+<!-- inline:end docs/design/implementation.md -->
+
 The data model, [`docs/design/data-model.md`](../docs/design/data-model.md), shows what data our PNL pipeline reads from SonarX and the tables we build from it. [[task:#57]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/57 "Write docs/design/data-model.md with the ER diagram")
 
-![ER diagram. Two pending SonarX tables, trades and resolutions, feed our tables. Many trades are grouped into one position, and each buy trade creates at most one lot. A position holds zero or more lots and is resolved by at most one resolution. One wallet PNL row totals one or more positions, and has at most one wallet metrics row.](../docs/design/diagrams/data-model.png)
+![ER diagram. Two pending SonarX tables, trades and resolutions, feed our tables. Many trades are grouped into one position, and each buy trade creates at most one lot. A position holds zero or more lots and is resolved by at most one resolution. One wallet PNL row totals one or more positions, and has at most one wallet metrics row.](../docs/design/diagrams/data-model.png)\
+*Figure 3 — ER diagram of the SonarX tables we read (pending) and the tables we create. Editable source: [`docs/design/diagrams/data-model.mmd`](../docs/design/diagrams/data-model.mmd).*
 
-*Figure 1 — ER diagram of the SonarX tables we read (pending) and the tables we create. Editable source: [`docs/design/diagrams/data-model.mmd`](../docs/design/diagrams/data-model.mmd).*
-
-Figure 1 shows how our data fits together. We start with two kinds of data from SonarX: the trades each wallet made and the results of the markets those trades were in. We don't have SonarX's table documentation yet, so those two boxes are our best guess based on what our specs need, and they're marked pending. From the trades we build a position for each wallet, market and outcome (YES or NO), and a lot for each buy so that sales can be matched against the oldest purchase first. A market's result, or running out of shares, closes a position, and each position records its profit and loss.
+Figure 3 shows how our data fits together. We start with two kinds of data from SonarX: the trades each wallet made and the results of the markets those trades were in. We don't have SonarX's table documentation yet, so those two boxes are our best guess based on what our specs need, and they're marked pending. From the trades we build a position for each wallet, market and outcome (YES or NO), and a lot for each buy so that sales can be matched against the oldest purchase first. A market's result, or running out of shares, closes a position, and each position records its profit and loss.
 
 From there the diagram rolls up. The wallet PNL table adds up a wallet's positions into one total, and the wallet metrics table holds the numbers we use to rank and describe traders, like ROI, win rate and average entry price. Everything in our own tables comes from a requirement in the PNL and ranking specs. Anything we haven't decided yet, such as tracking exactly which lots each sale used up, is left out on purpose and listed in the design document. Once SonarX sends its schema documents, we'll check the two SonarX boxes against them and note the document and date.
 
+<!-- inline:begin docs/design/data-model.md (copied by scripts/inline_docs.py: edit docs/design/data-model.md, then rerun the script) -->
+
+Epic: #24, #29 · Stories: #26, #27, #30, #31 · Task: #57
+Owner: Justin Cox · Sprint: 2 · Status: draft
+Specifications: [`../specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), [`../specs/trader-ranking.md`](../docs/specs/trader-ranking.md)
+
+### Design — Data model for the SonarX tables we read and the tables we create
+
+*What data the PNL pipeline reads from SonarX, what tables it builds from that
+data (positions, lots, wallet PNL and wallet metrics), and how they connect.*
+
+**Heads up: we do not have the SonarX tables yet.** The team has not received
+SonarX's schema documents, so the two SonarX boxes in Figure 4 are *inferred*
+from what our specifications need. Their names, columns and keys are our best
+guess and are marked PENDING. Our own five tables are drawn from the two
+specifications and do not depend on SonarX's naming.
+
+**1. The picture**
+
+Figure 4 shows the whole model. Read it from the top: trades and market
+resolutions come in from SonarX, the pipeline groups the trades into positions
+and lots, and the wallet totals and metrics are built from the positions.
+
+![ER diagram. Two pending SonarX tables, trades and resolutions, feed our tables. Many trades are grouped into one position, and each buy trade creates at most one lot. A position holds zero or more lots and is resolved by at most one resolution. One wallet PNL row totals one or more positions, and has at most one wallet metrics row.](../docs/design/diagrams/data-model.png)\
+*Figure 4 — ER diagram of the SonarX source tables (pending, inferred) and the
+tables we create. It answers one question: what data do we read and store, and
+how is it related? Editable source: [`diagrams/data-model.mmd`](../docs/design/diagrams/data-model.mmd).
+Comments on our columns cite the requirement that needs them (FR numbers are
+from the position spec unless marked "ranking").*
+
+**2. The tables we create**
+
+| Table | One row for each | Key | Why it exists |
+|---|---|---|---|
+| `POSITION` | proxy wallet, market, outcome token and as of time | `position_id` | FR-1 groups trades into one position per wallet, market and outcome token. It holds open or closed status, the incomplete flag, and realized and unrealized PNL. |
+| `LOT` | buy added to a position | `lot_id` | FR-3 adds a lot for every buy. FIFO (FR-6) shrinks `shares_remaining` as sales come in. |
+| `WALLET_PNL` | wallet and as of time | `wallet_address` + `as_of_time` | FR-14 sums a wallet's positions into realized, unrealized and total PNL. |
+| `WALLET_METRICS` | ranked wallet and as of time | `wallet_address` + `as_of_time` | The ranking spec's amount spent, ROI, ranks, win rate, average entry price, holding period, open and incomplete counts and primary category. |
+
+The `as_of_time` column is there because both specs define every result "as of
+time T", and the ranking spec (NFR-4) requires each output to state it.
+
+**3. How the tables connect**
+
+| Link | Cardinality | In plain words |
+|---|---|---|
+| Trade → position | many trades to exactly one position | every trade lands in one wallet, market and outcome token position (FR-1) |
+| Buy trade → lot | one buy to at most one lot | a buy makes a lot; a sell makes none (FR-3, FR-4) |
+| Position → lot | one position to zero or more lots | zero when the first trade is a sell we cannot match (FR-5) |
+| Resolution → position | one resolution to zero or more positions | a position has at most one resolution at or before T (FR-8 to FR-10); a market with no resolution yet has none |
+| Wallet PNL → position | one wallet row to one or more positions | the totals add up the wallet's positions (FR-14) |
+| Wallet PNL → wallet metrics | one to zero or one | metrics are built for ranked wallets (ranking FR-11) |
+
+**4. SonarX source tables: pending**
+
+| Drawn as | What our specs need from it | Status |
+|---|---|---|
+| SonarX trades (inferred) | wallet, market, outcome token, buy or sell, price per share, shares, chain order (block, then position in block) and time | **pending**: no SonarX schema document received |
+| SonarX resolutions (inferred) | resolved outcome, payout per share, resolution time | **pending**: same |
+
+The column names in these two boxes are the *ideas* the specs use, not real
+SonarX column names. Which SonarX table and column holds each field is the job
+of `docs/specs/data-sources.md` (#25). Task #57 asks us to check the source
+attributes against the SonarX schema documents that arrive through Slack and
+to note the document and date. That check is **not done yet**:
+
+| SonarX schema document | Received through Slack on | Checked against Figure 4 on |
+|---|---|---|
+| pending | pending | pending |
+
+When the documents arrive, fill in this table, rename the two boxes and their
+columns to match, and remove "inferred" from Figure 4 in the same pull request.
+
+**5. Choices to confirm and things left out**
+
+These are proposals from the first draft. Please confirm or change them in
+review, since the data model will outlast the sprint.
+
+- **Rows are keyed by `as_of_time`**, so running again for another T does not
+  overwrite the first run.
+- **Per position PNL is stored on `POSITION`.** `data-flow.md` (#58, still on
+  its own branch) says the PNL store holds PNL per position and per wallet, so
+  one of the two documents will change.
+- **Rank, ROI and amount spent live in `WALLET_METRICS`** rather than a
+  separate ranking table.
+- **Keys such as `position_id` and `lot_id` are generated ids** we chose so a
+  lot can point at its position with one column.
+
+Left out on purpose, because the specs have not decided them (a box nobody has
+chosen would break `DIAGRAMS.md` §5):
+
+- **Which lots each sale used up.** The position spec (NFR-3) wants every
+  figure traceable to its trades and lots, but today only `shares_remaining`
+  is stored. Whether to add a table for this is a team decision.
+- **Per category breakdown.** Ranking FR-15 reports each category's share of
+  spending and PNL. We store only `primary_category` for now, because which
+  SonarX column holds a market's category is still open (ranking Q3).
+- **Fees, and events other than buys and sells** such as splits, merges and
+  redemptions (position spec open questions).
+- **First buy time, close time and open position age.** The ranking spec
+  computes them from trades, so they are not stored.
+- **Owner (EOA) wallet links and real time data:** Phase 2.
+
+**6. What was checked and what was not**
+
+Checked by reading the two specs against the diagram: every column on our four
+tables cites a requirement, and every link in §3 does too. Not checked: the
+SonarX columns (§4), that a SonarX trade has a single column key, and that the
+exported image matches the Mermaid source after any future edit (re-export
+both together).
+
+<!-- inline:end docs/design/data-model.md -->
+
 The data flow design, [`docs/design/data-flow.md`](../docs/design/data-flow.md), shows how data moves from SonarX's Snowflake tables through position matching, PNL, ranking and metrics to the dashboard, as a Level 0 context diagram and a Level 1 diagram whose processes are numbered to match the specification. It serves Objectives 1.1 to 1.3, 2.1, 2.2, 3.2 and 3.3. [[task:#58]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/58 "Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams")
 
+<!-- inline:begin docs/design/data-flow.md (copied by scripts/inline_docs.py: edit docs/design/data-flow.md, then rerun the script) -->
+
+### Design — Data flow from SonarX's Polygon data to the dashboard
+
+Epic: #24, #29, #33 · Stories: #25, #26, #27, #30, #31, #35, #36 · Task: #58
+Owner: Bryan Orozco · Sprint: 2 · Status: draft
+Specification: [`../specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md)
+
+*How data moves from SonarX's Snowflake tables through position matching,
+PNL, ranking and metrics to the dashboard. Process numbers match the pipeline
+steps in the specification: process 1.0 is step 1, and so on. Every box is
+something the team has decided to build; storage technology is not drawn,
+because the stack is still being chosen in #52.*
+
+**1. Level 0 (context)**
+
+Where our system stops. SonarX's Snowflake warehouse is the only data source
+we have agreed on with SonarX ([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20)),
+and SonarX's clients are the only users of the dashboard. Figure 5 shows
+the system as one process with those two external entities.
+
+![Level 0 data flow: SonarX Snowflake sends Polymarket trades and market resolutions into the PNL analytics system; a SonarX client sends a time window, wallet and filter choices, and gets back the leaderboard, wallet PNL, positions and trading metrics](../docs/design/diagrams/dfd-level0.png)\
+*Figure 5 — Level 0 DFD. Source: [`diagrams/dfd-level0.mmd`](../docs/design/diagrams/dfd-level0.mmd).
+Rounded boxes are external entities; process 0.0 is the whole system.*
+
+**2. Level 1 (major processes)**
+
+Figure 6 breaks process 0.0 into the six pipeline steps and the four data
+stores between them; §3 and §4 describe each one.
+
+![Level 1 data flow: process 1.0 extracts trades and resolutions from SonarX Snowflake into store D1; 2.0 builds positions and FIFO lots into D2; 3.0 reads resolutions from D1 and positions from D2 and writes open or closed status back to D2; 4.0 reads lots and status from D2 and prices and payouts from D1 and writes PNL to D3; 5.0 reads D3 and closed positions from D2 and writes rankings and metrics to D4; 6.0 reads D2, D3 and D4 and serves the leaderboard and wallet lookup pages to the SonarX client](../docs/design/diagrams/dfd-level1.png)\
+*Figure 6 — Level 1 DFD. Source: [`diagrams/dfd-level1.mmd`](../docs/design/diagrams/dfd-level1.mmd).
+Rectangles are processes, numbered as in the specification; cylinders are data
+stores; rounded boxes are external entities.*
+
+**3. Processes**
+
+| Process | What it does | Reads | Writes | Specified in |
+|---|---|---|---|---|
+| 1.0 Extract trades and resolutions | Queries the last 12 months of Polymarket trades and the resolution of every market in them | SonarX Snowflake | D1 | `docs/specs/data-sources.md` (#25) |
+| 2.0 Build positions and lots | Groups trades into positions and applies them in chain order, adding a lot per buy and consuming lots FIFO per sell | D1 | D2 | `pnl-calculation.md` FR-1 to FR-7 (#26, #27) |
+| 3.0 Match resolutions, set status | Marks each position open or closed against its market's resolution | D1, D2 | D2 | `pnl-calculation.md` FR-8 to FR-10 (#26) |
+| 4.0 Compute PNL | Realizes resolved lots at the payout per share, marks open lots at the latest price, and totals per wallet | D1, D2 | D3 | `pnl-calculation.md` FR-11 to FR-15 (#27) |
+| 5.0 Rank wallets, compute metrics | Orders wallets and computes the trading behavior metrics | D2, D3 | D4 | `docs/specs/trader-ranking.md` (#30, #31) |
+| 6.0 Serve dashboard | Answers the leaderboard and wallet lookup pages from the stores | D2, D3, D4 | client | dashboard pages (#35, #36) |
+
+**4. Data stores**
+
+| Store | Holds | Written by | Read by |
+|---|---|---|---|
+| D1 Trades and resolutions | Normalized trades (wallet, market, outcome token, side, price, shares, time, chain order) and market resolutions (resolved outcome, payout per share, resolution time) | 1.0 | 2.0, 3.0, 4.0 |
+| D2 Positions and lots | One position per wallet, market and outcome token, with its remaining FIFO lots, realized PNL from sales, status, and incomplete flag | 2.0, 3.0 | 3.0, 4.0, 5.0, 6.0 |
+| D3 Wallet PNL | Realized, unrealized and total PNL per position and per wallet | 4.0 | 5.0, 6.0 |
+| D4 Rankings and metrics | Leaderboard order and trading behavior metrics per wallet | 5.0 | 6.0 |
+
+The fields listed for D1 are the ones the specification needs; the exact
+columns are checked against SonarX's schema documents in the ER diagram
+(#57).
+
+**5. Key decisions**
+
+These are proposals for the team to confirm in review of this document.
+The data stores in §4 follow from them, so they are proposals too until the
+team approves this pull request.
+
+| Decision | Options considered | Chosen | Why |
+|---|---|---|---|
+| Where the latest price comes from | the most recent trade in D1 · a separate price feed | the most recent trade in D1 | the specification defines latest price this way, and it needs no source beyond Snowflake; open question Q3 in the specification may change it once Sergio says which table to use |
+| When PNL is computed | when a page is requested · ahead of time into D3 and D4 | ahead of time | Objective 3.4 (#37) needs pages under 3 seconds, which a full FIFO pass over 12 months per request would not meet |
+| Separate stores per step | one wide table · a store per step | a store per step | a reviewer checking a discrepancy in #28 can see the positions and lots behind a wallet total (NFR-3 in the specification) |
+
+**6. What is NOT designed yet**
+
+- **Storage technology** for D1 to D4, and whether they live in Snowflake or
+  elsewhere: decided with the stack in #52, then drawn in
+  `docs/design/architecture.md` (#56).
+- **Market categories** for the trading metrics: their source is defined with
+  the ranking rules in #54 and the data sources in #25.
+- **Events other than buys and sells** (splits, merges, redemptions,
+  transfers): open question Q4 in the specification.
+- **Refresh schedule** for recomputing D2 to D4.
+- **Phase 2**: linking proxy wallets to EOA wallets and real time data are
+  future work, so they have no boxes in Figure 5 or Figure 6 on purpose.
+
+<!-- inline:end docs/design/data-flow.md -->
+
 The dashboard page flow design, [`docs/design/dashboard-flow.md`](../docs/design/dashboard-flow.md), shows how a SonarX client moves between the two dashboard pages: from the leaderboard to one wallet's lookup page by clicking a trader or entering a wallet address, and back. It serves Objectives 3.2 and 3.3. [[task:#60]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/60 "Write docs/design/dashboard-flow.md with the page flow diagram")
+
+<!-- inline:begin docs/design/dashboard-flow.md (copied by scripts/inline_docs.py: edit docs/design/dashboard-flow.md, then rerun the script) -->
+
+Epic: #33 · Stories: #34, #35, #36
+
+### Dashboard page flow
+
+Figure 7 shows how a SonarX client moves between dashboard pages. Each page answers questions in `docs/specs/dashboard-questions.md`.
+
+![Page flow diagram with two pages. A client opens the leaderboard, clicks a trader to reach the wallet lookup page, or enters a wallet address to reach it directly, and can return to the leaderboard.](../docs/design/dashboard-flow.png)\
+*Figure 7 — Page flow. How does a client get from the top traders to the details of one wallet? Source: `dashboard-flow.mmd`.*
+
+**Pages and the questions they answer**
+
+| Page | Story | Questions answered |
+|------|-------|--------------------|
+| Leaderboard | #35 | Q1, Q5 |
+| Wallet lookup | #36 | Q4, Q6, Q7 |
+
+<!-- inline:end docs/design/dashboard-flow.md -->
 
 
 ### Planned activities: the work items
@@ -167,6 +1164,8 @@ Sprint 1 was mostly writing and setup. Justin Cox replaced the course setup guid
 Sprint 2 continued the proposal. Leila De Belen wrote §3, and Bryan Orozco filled in the development plan, replaced the template references with our sources, condensed the team's research into one project context document, cited the Sprint 2 work items in this section, and is writing the Sprint 2 review. Recording the chosen prototype stack is still open, because the stack has not been decided. [[task:#49]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/49 "Write §3 Proposed Approach in proposal.md") [[task:#50]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/50 "Fill in docs/development-plan.md") [[task:#51]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/51 "Fix §8 References in proposal.md") [[task:#63]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/63 "Write the team source of truth doc from today's research") [[task:#65]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/65 "Cite the Sprint 2 work items in proposal §4") [[task:#53]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/53 "Write the Sprint 2 review (docs/sprint-reviews/sprint-2.md)") [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4")
 
 In Sprint 3, Bryan Orozco brought the repository in line with the course's Sprint 3 guidance: pull requests merged into our integration branch now close their issues, every user story is broken into features and tasks, and this section describes the work in prose. [[task:#82]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/82 "Bring repo in line with Sprint 3 instructions: auto close, issue chain, §4 prose")
+
+Later in Sprint 3, Bryan Orozco copied the full text of every specification and design document into this section, under the paragraph that indexes it, so the proposal can be read on its own; the documents in `docs/` remain the versions the team edits. He is also writing the Sprint 3 review. [[task:#141]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/141 "Bring the full text of every spec and design document into proposal §4") [[task:#142]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/142 "Write the Sprint 3 review (docs/sprint-reviews/sprint-3.md)")
 
 ## 5. Project Outcomes
 
