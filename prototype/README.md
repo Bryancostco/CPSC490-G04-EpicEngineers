@@ -67,3 +67,4 @@ variable is set.
 | Sprint | Increment |
 |---|---|
 | Sprint 3 | v0 skeleton: settings from environment variables, Snowflake client, smoke query, tests without credentials (#62) |
+| Sprint 3 | Position builder: trades grouped into positions with FIFO lots, chain order, incomplete flag, FR-1 to FR-5 tested on the spec's worked example (#108) |
