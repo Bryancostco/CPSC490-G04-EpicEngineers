@@ -7,7 +7,10 @@
 - **Sponsor:** SNX-1 (SonarX)
 - **Source of truth:** `proposal/proposal.md`. Specs in `docs/specs/`,
   designs in `docs/design/`, proof-of-concept code in `prototype/`.
-- **Stack (prototype):** data source is SonarX's Polygon blockchain data (Polymarket trades and market resolutions). Languages, frameworks, and services are not chosen yet; the team records them here and in proposal §4 once decided. Do not assume a stack.
+- **Read first:** [`docs/project-context.md`](docs/project-context.md) —
+  Phase 1 scope, mentor decisions with sources, the glossary, and each
+  member's research.
+- **Stack (prototype):** data source is SonarX's Polygon blockchain data (Polymarket trades and market resolutions) in Snowflake. The PNL pipeline is **Python 3.12 running outside Snowflake** (option A on #52, decided Nov 5, 2026): it reads trades and resolutions with `snowflake-connector-python`, builds positions, FIFO lots and PNL in plain Python with `decimal.Decimal` (never float), and is tested with `pytest` on fixtures in `prototype/tests/`. Code lives in `prototype/src/` laid out as in `docs/design/implementation.md`. **Not chosen yet:** where results are stored and the dashboard framework; record them here and in proposal §4 when the team decides, and do not assume either.
 
 ## How we work
 
