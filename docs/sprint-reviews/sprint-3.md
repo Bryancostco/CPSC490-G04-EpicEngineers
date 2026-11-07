@@ -36,7 +36,7 @@ due Nov 1.
 | §4 Environment | The prototype stack recorded: Python outside Snowflake | PR #137 (task #52), merged Nov 5 |
 | §4 Specification and design documents | The full text of every spec and design document copied in, with all 7 figures; the Word export is 64 pages | PR #143 (task #141), merged Nov 7 |
 | §4 Specification and design documents | Each figure appears once: summaries moved into their own documents, and CI checks the copies | PR #148 (task #147), in review |
-| §5, §6, §7 | First drafts of the outcomes, the spring timeline and the AI usage disclosure | PR #150 (task #149), in review |
+| §5, §6, §7 | First drafts of the outcomes, the spring timeline and the AI usage disclosure; AI rules updated and §4's facts corrected | PR #150 (tasks #149, #152), in review |
 | §4 Dashboard page flow | Paragraph describing the page flow (@leiladb) | PR #145 (task #97), merged Nov 7 |
 | Issue board | Every user story broken into features and tasks as sub-issues (#83 to #134); carried over Sprint 2 issues moved to the Sprint 3 milestone | Issues |
 
@@ -98,7 +98,9 @@ Snowflake smoke test, skips without credentials).
 | "Profitable" defaults to total PNL (realized plus unrealized) with return on capital as a toggle, and a minimum of 10 resolved trades so one lucky bet does not top the leaderboard (Erel, Nov 5) | Differs from the ranking spec, which filters only the ROI ranking and uses other thresholds; raised on #115 for Justin | #115 |
 | "Early" means the price moved toward the winning outcome after entry; time before resolution is a secondary filter (Erel, Nov 5) | A new metric the ranking spec does not define yet; raised on #115 | #115 |
 | Time windows: 7 days, 30 days, 90 days and all time (Erel, Nov 5) | For Phase 1, all time means the 12 month window; raised on #115 | #115 |
-| Section 4 shows the ER diagram twice, and the proposal should be our own writing (@leiladb and @justincox8, Discord, Nov 7) | Keep the full documents for the 50 page paper; move each hand written summary into its document; CI checks the copies | #147, PR #148 |
+| Section 4 shows the ER diagram twice (@leiladb and @justincox8, Discord, Nov 7) | Keep the full documents for the 50 page paper; move each hand written summary into its document; CI checks the copies | #147, PR #148 |
+| An assistant may now help write the proposal, not only the documents and code (Kyoung, in class, week of Nov 2) | Development plan §3 rewritten with the conditions we follow; §7 discloses AI use per section; §4's stale "who did what" facts corrected | #152, PR #150 |
+| Nobody has SonarX console access a week after the Oct 30 promise (@justincox8, Discord, Nov 6) | Tracked as its own task, owned by @Bryancostco | #153 |
 | Unrealized PNL at the last traded price, labelled clearly as unrealized (Erel, Nov 5) | Matches the PNL spec's definition of latest price; the label goes in the dashboard spec | #107, #125 |
 
 ## Contribution snapshot
