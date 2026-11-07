@@ -889,210 +889,7 @@ Figure 3 shows how our data fits together. We start with two kinds of data from 
 
 From there the diagram rolls up. The wallet PNL table adds up a wallet's positions into one total, and the wallet metrics table holds the numbers we use to rank and describe traders, like ROI, win rate and average entry price. Everything in our own tables comes from a requirement in the PNL and ranking specs. Anything we haven't decided yet, such as tracking exactly which lots each sale used up, is left out on purpose and listed in the design document. Once SonarX sends its schema documents, we'll check the two SonarX boxes against them and note the document and date.
 
-<!-- inline:begin docs/design/data-model.md (copied by scripts/inline_docs.py: edit docs/design/data-model.md, then rerun the script) -->
 
-Epic: #24, #29 · Stories: #26, #27, #30, #31 · Task: #57
-Owner: Justin Cox · Sprint: 2 · Status: draft
-Specifications: [`../specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md), [`../specs/trader-ranking.md`](../docs/specs/trader-ranking.md)
-
-### Design — Data model for the SonarX tables we read and the tables we create
-
-*What data the PNL pipeline reads from SonarX, what tables it builds from that
-data (positions, lots, wallet PNL and wallet metrics), and how they connect.*
-
-**Heads up: we do not have the SonarX tables yet.** The team has not received
-SonarX's schema documents, so the two SonarX boxes in Figure 4 are *inferred*
-from what our specifications need. Their names, columns and keys are our best
-guess and are marked PENDING. Our own five tables are drawn from the two
-specifications and do not depend on SonarX's naming.
-
-**1. The picture**
-
-Figure 4 shows the whole model. Read it from the top: trades and market
-resolutions come in from SonarX, the pipeline groups the trades into positions
-and lots, and the wallet totals and metrics are built from the positions.
-
-![ER diagram. Two pending SonarX tables, trades and resolutions, feed our tables. Many trades are grouped into one position, and each buy trade creates at most one lot. A position holds zero or more lots and is resolved by at most one resolution. One wallet PNL row totals one or more positions, and has at most one wallet metrics row.](../docs/design/diagrams/data-model.png)\
-*Figure 4 — ER diagram of the SonarX source tables (pending, inferred) and the
-tables we create. It answers one question: what data do we read and store, and
-how is it related? Editable source: [`diagrams/data-model.mmd`](../docs/design/diagrams/data-model.mmd).
-Comments on our columns cite the requirement that needs them (FR numbers are
-from the position spec unless marked "ranking").*
-
-**2. The tables we create**
-
-| Table | One row for each | Key | Why it exists |
-|---|---|---|---|
-| `POSITION` | proxy wallet, market, outcome token and as of time | `position_id` | FR-1 groups trades into one position per wallet, market and outcome token. It holds open or closed status, the incomplete flag, and realized and unrealized PNL. |
-| `LOT` | buy added to a position | `lot_id` | FR-3 adds a lot for every buy. FIFO (FR-6) shrinks `shares_remaining` as sales come in. |
-| `WALLET_PNL` | wallet and as of time | `wallet_address` + `as_of_time` | FR-14 sums a wallet's positions into realized, unrealized and total PNL. |
-| `WALLET_METRICS` | ranked wallet and as of time | `wallet_address` + `as_of_time` | The ranking spec's amount spent, ROI, ranks, win rate, average entry price, holding period, open and incomplete counts and primary category. |
-
-The `as_of_time` column is there because both specs define every result "as of
-time T", and the ranking spec (NFR-4) requires each output to state it.
-
-**3. How the tables connect**
-
-| Link | Cardinality | In plain words |
-|---|---|---|
-| Trade → position | many trades to exactly one position | every trade lands in one wallet, market and outcome token position (FR-1) |
-| Buy trade → lot | one buy to at most one lot | a buy makes a lot; a sell makes none (FR-3, FR-4) |
-| Position → lot | one position to zero or more lots | zero when the first trade is a sell we cannot match (FR-5) |
-| Resolution → position | one resolution to zero or more positions | a position has at most one resolution at or before T (FR-8 to FR-10); a market with no resolution yet has none |
-| Wallet PNL → position | one wallet row to one or more positions | the totals add up the wallet's positions (FR-14) |
-| Wallet PNL → wallet metrics | one to zero or one | metrics are built for ranked wallets (ranking FR-11) |
-
-**4. SonarX source tables: pending**
-
-| Drawn as | What our specs need from it | Status |
-|---|---|---|
-| SonarX trades (inferred) | wallet, market, outcome token, buy or sell, price per share, shares, chain order (block, then position in block) and time | **pending**: no SonarX schema document received |
-| SonarX resolutions (inferred) | resolved outcome, payout per share, resolution time | **pending**: same |
-
-The column names in these two boxes are the *ideas* the specs use, not real
-SonarX column names. Which SonarX table and column holds each field is the job
-of `docs/specs/data-sources.md` (#25). Task #57 asks us to check the source
-attributes against the SonarX schema documents that arrive through Slack and
-to note the document and date. That check is **not done yet**:
-
-| SonarX schema document | Received through Slack on | Checked against Figure 4 on |
-|---|---|---|
-| pending | pending | pending |
-
-When the documents arrive, fill in this table, rename the two boxes and their
-columns to match, and remove "inferred" from Figure 4 in the same pull request.
-
-**5. Choices to confirm and things left out**
-
-These are proposals from the first draft. Please confirm or change them in
-review, since the data model will outlast the sprint.
-
-- **Rows are keyed by `as_of_time`**, so running again for another T does not
-  overwrite the first run.
-- **Per position PNL is stored on `POSITION`.** `data-flow.md` (#58, still on
-  its own branch) says the PNL store holds PNL per position and per wallet, so
-  one of the two documents will change.
-- **Rank, ROI and amount spent live in `WALLET_METRICS`** rather than a
-  separate ranking table.
-- **Keys such as `position_id` and `lot_id` are generated ids** we chose so a
-  lot can point at its position with one column.
-
-Left out on purpose, because the specs have not decided them (a box nobody has
-chosen would break `DIAGRAMS.md` §5):
-
-- **Which lots each sale used up.** The position spec (NFR-3) wants every
-  figure traceable to its trades and lots, but today only `shares_remaining`
-  is stored. Whether to add a table for this is a team decision.
-- **Per category breakdown.** Ranking FR-15 reports each category's share of
-  spending and PNL. We store only `primary_category` for now, because which
-  SonarX column holds a market's category is still open (ranking Q3).
-- **Fees, and events other than buys and sells** such as splits, merges and
-  redemptions (position spec open questions).
-- **First buy time, close time and open position age.** The ranking spec
-  computes them from trades, so they are not stored.
-- **Owner (EOA) wallet links and real time data:** Phase 2.
-
-**6. What was checked and what was not**
-
-Checked by reading the two specs against the diagram: every column on our four
-tables cites a requirement, and every link in §3 does too. Not checked: the
-SonarX columns (§4), that a SonarX trade has a single column key, and that the
-exported image matches the Mermaid source after any future edit (re-export
-both together).
-
-<!-- inline:end docs/design/data-model.md -->
-
-The data flow design, [`docs/design/data-flow.md`](../docs/design/data-flow.md), shows how data moves from SonarX's Snowflake tables through position matching, PNL, ranking and metrics to the dashboard, as a Level 0 context diagram and a Level 1 diagram whose processes are numbered to match the specification. It serves Objectives 1.1 to 1.3, 2.1, 2.2, 3.2 and 3.3. [[task:#58]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/58 "Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams")
-
-<!-- inline:begin docs/design/data-flow.md (copied by scripts/inline_docs.py: edit docs/design/data-flow.md, then rerun the script) -->
-
-### Design — Data flow from SonarX's Polygon data to the dashboard
-
-Epic: #24, #29, #33 · Stories: #25, #26, #27, #30, #31, #35, #36 · Task: #58
-Owner: Bryan Orozco · Sprint: 2 · Status: draft
-Specification: [`../specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md)
-
-*How data moves from SonarX's Snowflake tables through position matching,
-PNL, ranking and metrics to the dashboard. Process numbers match the pipeline
-steps in the specification: process 1.0 is step 1, and so on. Every box is
-something the team has decided to build; storage technology is not drawn,
-because the stack is still being chosen in #52.*
-
-**1. Level 0 (context)**
-
-Where our system stops. SonarX's Snowflake warehouse is the only data source
-we have agreed on with SonarX ([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20)),
-and SonarX's clients are the only users of the dashboard. Figure 5 shows
-the system as one process with those two external entities.
-
-![Level 0 data flow: SonarX Snowflake sends Polymarket trades and market resolutions into the PNL analytics system; a SonarX client sends a time window, wallet and filter choices, and gets back the leaderboard, wallet PNL, positions and trading metrics](../docs/design/diagrams/dfd-level0.png)\
-*Figure 5 — Level 0 DFD. Source: [`diagrams/dfd-level0.mmd`](../docs/design/diagrams/dfd-level0.mmd).
-Rounded boxes are external entities; process 0.0 is the whole system.*
-
-**2. Level 1 (major processes)**
-
-Figure 6 breaks process 0.0 into the six pipeline steps and the four data
-stores between them; §3 and §4 describe each one.
-
-![Level 1 data flow: process 1.0 extracts trades and resolutions from SonarX Snowflake into store D1; 2.0 builds positions and FIFO lots into D2; 3.0 reads resolutions from D1 and positions from D2 and writes open or closed status back to D2; 4.0 reads lots and status from D2 and prices and payouts from D1 and writes PNL to D3; 5.0 reads D3 and closed positions from D2 and writes rankings and metrics to D4; 6.0 reads D2, D3 and D4 and serves the leaderboard and wallet lookup pages to the SonarX client](../docs/design/diagrams/dfd-level1.png)\
-*Figure 6 — Level 1 DFD. Source: [`diagrams/dfd-level1.mmd`](../docs/design/diagrams/dfd-level1.mmd).
-Rectangles are processes, numbered as in the specification; cylinders are data
-stores; rounded boxes are external entities.*
-
-**3. Processes**
-
-| Process | What it does | Reads | Writes | Specified in |
-|---|---|---|---|---|
-| 1.0 Extract trades and resolutions | Queries the last 12 months of Polymarket trades and the resolution of every market in them | SonarX Snowflake | D1 | `docs/specs/data-sources.md` (#25) |
-| 2.0 Build positions and lots | Groups trades into positions and applies them in chain order, adding a lot per buy and consuming lots FIFO per sell | D1 | D2 | `pnl-calculation.md` FR-1 to FR-7 (#26, #27) |
-| 3.0 Match resolutions, set status | Marks each position open or closed against its market's resolution | D1, D2 | D2 | `pnl-calculation.md` FR-8 to FR-10 (#26) |
-| 4.0 Compute PNL | Realizes resolved lots at the payout per share, marks open lots at the latest price, and totals per wallet | D1, D2 | D3 | `pnl-calculation.md` FR-11 to FR-15 (#27) |
-| 5.0 Rank wallets, compute metrics | Orders wallets and computes the trading behavior metrics | D2, D3 | D4 | `docs/specs/trader-ranking.md` (#30, #31) |
-| 6.0 Serve dashboard | Answers the leaderboard and wallet lookup pages from the stores | D2, D3, D4 | client | dashboard pages (#35, #36) |
-
-**4. Data stores**
-
-| Store | Holds | Written by | Read by |
-|---|---|---|---|
-| D1 Trades and resolutions | Normalized trades (wallet, market, outcome token, side, price, shares, time, chain order) and market resolutions (resolved outcome, payout per share, resolution time) | 1.0 | 2.0, 3.0, 4.0 |
-| D2 Positions and lots | One position per wallet, market and outcome token, with its remaining FIFO lots, realized PNL from sales, status, and incomplete flag | 2.0, 3.0 | 3.0, 4.0, 5.0, 6.0 |
-| D3 Wallet PNL | Realized, unrealized and total PNL per position and per wallet | 4.0 | 5.0, 6.0 |
-| D4 Rankings and metrics | Leaderboard order and trading behavior metrics per wallet | 5.0 | 6.0 |
-
-The fields listed for D1 are the ones the specification needs; the exact
-columns are checked against SonarX's schema documents in the ER diagram
-(#57).
-
-**5. Key decisions**
-
-These are proposals for the team to confirm in review of this document.
-The data stores in §4 follow from them, so they are proposals too until the
-team approves this pull request.
-
-| Decision | Options considered | Chosen | Why |
-|---|---|---|---|
-| Where the latest price comes from | the most recent trade in D1 · a separate price feed | the most recent trade in D1 | the specification defines latest price this way, and it needs no source beyond Snowflake; open question Q3 in the specification may change it once Sergio says which table to use |
-| When PNL is computed | when a page is requested · ahead of time into D3 and D4 | ahead of time | Objective 3.4 (#37) needs pages under 3 seconds, which a full FIFO pass over 12 months per request would not meet |
-| Separate stores per step | one wide table · a store per step | a store per step | a reviewer checking a discrepancy in #28 can see the positions and lots behind a wallet total (NFR-3 in the specification) |
-
-**6. What is NOT designed yet**
-
-- **Storage technology** for D1 to D4, and whether they live in Snowflake or
-  elsewhere: decided with the stack in #52, then drawn in
-  `docs/design/architecture.md` (#56).
-- **Market categories** for the trading metrics: their source is defined with
-  the ranking rules in #54 and the data sources in #25.
-- **Events other than buys and sells** (splits, merges, redemptions,
-  transfers): open question Q4 in the specification.
-- **Refresh schedule** for recomputing D2 to D4.
-- **Phase 2**: linking proxy wallets to EOA wallets and real time data are
-  future work, so they have no boxes in Figure 5 or Figure 6 on purpose.
-
-<!-- inline:end docs/design/data-flow.md -->
-
-The dashboard page flow design, [`docs/design/dashboard-flow.md`](../docs/design/dashboard-flow.md), shows how a SonarX client moves between the two dashboard pages: from the leaderboard to one wallet's lookup page by clicking a trader or entering a wallet address, and back. It serves Objectives 3.2 and 3.3. [[task:#60]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/60 "Write docs/design/dashboard-flow.md with the page flow diagram")
-
-<!-- inline:begin docs/design/dashboard-flow.md (copied by scripts/inline_docs.py: edit docs/design/dashboard-flow.md, then rerun the script) -->
 
 Epic: #33 · Stories: #34, #35, #36
 
@@ -1112,6 +909,17 @@ Figure 7 shows how a SonarX client moves between dashboard pages. Each page answ
 
 <!-- inline:end docs/design/dashboard-flow.md -->
 
+### PNL Pipeline
+![Sequence diagram of one PNL run](../docs/design/diagrams/pnl-run-sequence.png)
+
+*Figure 8 — UML sequence diagram of one PNL run. It answers one question: in
+what order do the components talk to each other, and what do they pass, when
+the pipeline runs once. Source: [`diagrams/pnl-run-sequence.mmd`](diagrams/pnl-run-sequence.mmd).
+Step numbers and FR numbers are from [`pnl-calculation.md`](../specs/pnl-calculation.md).*
+
+Figure 7 displays what happens when we compute profit and loss in order. Time runs from the top of the diagram to the bottom, where each column is a part of our system. Pull trades requests SonarX's Snowflake database for the last 12 months of trades and results. It then hands those off to build positions where it groups the trades into a position for each and every wallet as well as its market and outcom. It then matches each one to its market's result and marks whether its open or closed.
+
+Compute PnL calculates te profit or loss on each position then adds up each wallets total, and saves the results.
 
 ### Planned activities: the work items
 
