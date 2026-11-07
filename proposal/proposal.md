@@ -631,6 +631,7 @@ The mentor approves this finished list before any interface design is merged.
 | Date | Change | Author |
 |------|--------|--------|
 | October 26, 2026 | Initial draft | Leila De Belen |
+| November 5, 2026 | Erel Saul approved questions (#124) | Leila De Belen |
 
 <!-- inline:end docs/specs/dashboard-questions.md -->
 
@@ -882,13 +883,6 @@ The prototype is ready for demonstration when that workflow runs successfully, t
 
 The data model, [`docs/design/data-model.md`](../docs/design/data-model.md), shows what data our PNL pipeline reads from SonarX and the tables we build from it. [[task:#57]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/57 "Write docs/design/data-model.md with the ER diagram")
 
-![ER diagram. Two pending SonarX tables, trades and resolutions, feed our tables. Many trades are grouped into one position, and each buy trade creates at most one lot. A position holds zero or more lots and is resolved by at most one resolution. One wallet PNL row totals one or more positions, and has at most one wallet metrics row.](../docs/design/diagrams/data-model.png)\
-*Figure 3 — ER diagram of the SonarX tables we read (pending) and the tables we create. Editable source: [`docs/design/diagrams/data-model.mmd`](../docs/design/diagrams/data-model.mmd).*
-
-Figure 3 shows how our data fits together. We start with two kinds of data from SonarX: the trades each wallet made and the results of the markets those trades were in. We don't have SonarX's table documentation yet, so those two boxes are our best guess based on what our specs need, and they're marked pending. From the trades we build a position for each wallet, market and outcome (YES or NO), and a lot for each buy so that sales can be matched against the oldest purchase first. A market's result, or running out of shares, closes a position, and each position records its profit and loss.
-
-From there the diagram rolls up. The wallet PNL table adds up a wallet's positions into one total, and the wallet metrics table holds the numbers we use to rank and describe traders, like ROI, win rate and average entry price. Everything in our own tables comes from a requirement in the PNL and ranking specs. Anything we haven't decided yet, such as tracking exactly which lots each sale used up, is left out on purpose and listed in the design document. Once SonarX sends its schema documents, we'll check the two SonarX boxes against them and note the document and date.
-
 <!-- inline:begin docs/design/data-model.md (copied by scripts/inline_docs.py: edit docs/design/data-model.md, then rerun the script) -->
 
 Epic: #24, #29 · Stories: #26, #27, #30, #31 · Task: #57
@@ -901,23 +895,27 @@ Specifications: [`../specs/pnl-calculation.md`](../docs/specs/pnl-calculation.md
 data (positions, lots, wallet PNL and wallet metrics), and how they connect.*
 
 **Heads up: we do not have the SonarX tables yet.** The team has not received
-SonarX's schema documents, so the two SonarX boxes in Figure 4 are *inferred*
+SonarX's schema documents, so the two SonarX boxes in Figure 3 are *inferred*
 from what our specifications need. Their names, columns and keys are our best
 guess and are marked PENDING. Our own five tables are drawn from the two
 specifications and do not depend on SonarX's naming.
 
 **1. The picture**
 
-Figure 4 shows the whole model. Read it from the top: trades and market
+Figure 3 shows the whole model. Read it from the top: trades and market
 resolutions come in from SonarX, the pipeline groups the trades into positions
 and lots, and the wallet totals and metrics are built from the positions.
 
 ![ER diagram. Two pending SonarX tables, trades and resolutions, feed our tables. Many trades are grouped into one position, and each buy trade creates at most one lot. A position holds zero or more lots and is resolved by at most one resolution. One wallet PNL row totals one or more positions, and has at most one wallet metrics row.](../docs/design/diagrams/data-model.png)\
-*Figure 4 — ER diagram of the SonarX source tables (pending, inferred) and the
+*Figure 3 — ER diagram of the SonarX source tables (pending, inferred) and the
 tables we create. It answers one question: what data do we read and store, and
 how is it related? Editable source: [`diagrams/data-model.mmd`](../docs/design/diagrams/data-model.mmd).
 Comments on our columns cite the requirement that needs them (FR numbers are
 from the position spec unless marked "ranking").*
+
+Figure 3 shows how our data fits together. We start with two kinds of data from SonarX: the trades each wallet made and the results of the markets those trades were in. We don't have SonarX's table documentation yet, so those two boxes are our best guess based on what our specs need, and they're marked pending. From the trades we build a position for each wallet, market and outcome (YES or NO), and a lot for each buy so that sales can be matched against the oldest purchase first. A market's result, or running out of shares, closes a position, and each position records its profit and loss.
+
+From there the diagram rolls up. The wallet PNL table adds up a wallet's positions into one total, and the wallet metrics table holds the numbers we use to rank and describe traders, like ROI, win rate and average entry price. Everything in our own tables comes from a requirement in the PNL and ranking specs. Anything we haven't decided yet, such as tracking exactly which lots each sale used up, is left out on purpose and listed in the design document. Once SonarX sends its schema documents, we'll check the two SonarX boxes against them and note the document and date.
 
 **2. The tables we create**
 
@@ -955,12 +953,12 @@ of `docs/specs/data-sources.md` (#25). Task #57 asks us to check the source
 attributes against the SonarX schema documents that arrive through Slack and
 to note the document and date. That check is **not done yet**:
 
-| SonarX schema document | Received through Slack on | Checked against Figure 4 on |
+| SonarX schema document | Received through Slack on | Checked against Figure 3 on |
 |---|---|---|
 | pending | pending | pending |
 
 When the documents arrive, fill in this table, rename the two boxes and their
-columns to match, and remove "inferred" from Figure 4 in the same pull request.
+columns to match, and remove "inferred" from Figure 3 in the same pull request.
 
 **5. Choices to confirm and things left out**
 
@@ -1022,20 +1020,20 @@ because the stack is still being chosen in #52.*
 
 Where our system stops. SonarX's Snowflake warehouse is the only data source
 we have agreed on with SonarX ([#20](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20)),
-and SonarX's clients are the only users of the dashboard. Figure 5 shows
+and SonarX's clients are the only users of the dashboard. Figure 4 shows
 the system as one process with those two external entities.
 
 ![Level 0 data flow: SonarX Snowflake sends Polymarket trades and market resolutions into the PNL analytics system; a SonarX client sends a time window, wallet and filter choices, and gets back the leaderboard, wallet PNL, positions and trading metrics](../docs/design/diagrams/dfd-level0.png)\
-*Figure 5 — Level 0 DFD. Source: [`diagrams/dfd-level0.mmd`](../docs/design/diagrams/dfd-level0.mmd).
+*Figure 4 — Level 0 DFD. Source: [`diagrams/dfd-level0.mmd`](../docs/design/diagrams/dfd-level0.mmd).
 Rounded boxes are external entities; process 0.0 is the whole system.*
 
 **2. Level 1 (major processes)**
 
-Figure 6 breaks process 0.0 into the six pipeline steps and the four data
+Figure 5 breaks process 0.0 into the six pipeline steps and the four data
 stores between them; §3 and §4 describe each one.
 
 ![Level 1 data flow: process 1.0 extracts trades and resolutions from SonarX Snowflake into store D1; 2.0 builds positions and FIFO lots into D2; 3.0 reads resolutions from D1 and positions from D2 and writes open or closed status back to D2; 4.0 reads lots and status from D2 and prices and payouts from D1 and writes PNL to D3; 5.0 reads D3 and closed positions from D2 and writes rankings and metrics to D4; 6.0 reads D2, D3 and D4 and serves the leaderboard and wallet lookup pages to the SonarX client](../docs/design/diagrams/dfd-level1.png)\
-*Figure 6 — Level 1 DFD. Source: [`diagrams/dfd-level1.mmd`](../docs/design/diagrams/dfd-level1.mmd).
+*Figure 5 — Level 1 DFD. Source: [`diagrams/dfd-level1.mmd`](../docs/design/diagrams/dfd-level1.mmd).
 Rectangles are processes, numbered as in the specification; cylinders are data
 stores; rounded boxes are external entities.*
 
@@ -1086,7 +1084,7 @@ team approves this pull request.
   transfers): open question Q4 in the specification.
 - **Refresh schedule** for recomputing D2 to D4.
 - **Phase 2**: linking proxy wallets to EOA wallets and real time data are
-  future work, so they have no boxes in Figure 5 or Figure 6 on purpose.
+  future work, so they have no boxes in Figure 4 or Figure 5 on purpose.
 
 <!-- inline:end docs/design/data-flow.md -->
 
@@ -1098,12 +1096,12 @@ Epic: #33 · Stories: #34, #35, #36
 
 ### Dashboard page flow
 
-Figure 7 shows how a SonarX client moves between dashboard pages. Each page answers questions in `docs/specs/dashboard-questions.md`.
+Figure 6 shows how a SonarX client moves between dashboard pages. Each page answers questions in `docs/specs/dashboard-questions.md`.
 
 ![Page flow diagram with two pages. A client opens the leaderboard, clicks a trader to reach the wallet lookup page, or enters a wallet address to reach it directly, and can return to the leaderboard.](../docs/design/dashboard-flow.png)\
-*Figure 7 — Page flow. How does a client get from the top traders to the details of one wallet? Source: `dashboard-flow.mmd`.*
+*Figure 6 — Page flow. How does a client get from the top traders to the details of one wallet? Source: `dashboard-flow.mmd`.*
 
-Figure 7 is a dashboard organized around two entry points that both lead to a single wallet lookup page. When a client opens the dashboard, they can either land on the leaderboard page or enter a wallet address directly. The leaderboard page shows the top traders and lets the client change the time window, apply filters, or re-sort the list without leaving the page. Selecting a trader from the leaderboard opens the wallet lookup page for that trader, and entering a wallet address takes the client to the same page. The wallet lookup page shows the wallet’s open and closed positions, its realized and unrealized PNL, and its trading behaviors. From there, the client can return to the leaderboard to keep browsing. This flow keeps navigation shallow, since every page is at most one step from the others, and supports both discovery of top traders and lookup of a specific wallet (#97).
+Figure 6 is a dashboard organized around two entry points that both lead to a single wallet lookup page. When a client opens the dashboard, they can either land on the leaderboard page or enter a wallet address directly. The leaderboard page shows the top traders and lets the client change the time window, apply filters, or re-sort the list without leaving the page. Selecting a trader from the leaderboard opens the wallet lookup page for that trader, and entering a wallet address takes the client to the same page. The wallet lookup page shows the wallet’s open and closed positions, its realized and unrealized PNL, and its trading behaviors. From there, the client can return to the leaderboard to keep browsing. This flow keeps navigation shallow, since every page is at most one step from the others, and supports both discovery of top traders and lookup of a specific wallet (#97).
 
 **Pages and the questions they answer**
 
@@ -1167,7 +1165,7 @@ Sprint 2 continued the proposal. Leila De Belen wrote §3, and Bryan Orozco fill
 
 In Sprint 3, Bryan Orozco brought the repository in line with the course's Sprint 3 guidance: pull requests merged into our integration branch now close their issues, every user story is broken into features and tasks, and this section describes the work in prose. [[task:#82]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/82 "Bring repo in line with Sprint 3 instructions: auto close, issue chain, §4 prose")
 
-Later in Sprint 3, Bryan Orozco copied the full text of every specification and design document into this section, under the paragraph that indexes it, so the proposal can be read on its own; the documents in `docs/` remain the versions the team edits. He is also writing the Sprint 3 review. [[task:#141]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/141 "Bring the full text of every spec and design document into proposal §4") [[task:#142]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/142 "Write the Sprint 3 review (docs/sprint-reviews/sprint-3.md)")
+Later in Sprint 3, Bryan Orozco copied the full text of every specification and design document into this section, under the paragraph that indexes it, so the proposal can be read on its own; the documents in `docs/` remain the versions the team edits. Each summary now lives in its own document so every figure appears once, and CI checks that the copies match their sources. He is also writing the Sprint 3 review. [[task:#141]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/141 "Bring the full text of every spec and design document into proposal §4") [[task:#142]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/142 "Write the Sprint 3 review (docs/sprint-reviews/sprint-3.md)") [[task:#147]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/147 "Fix duplicate figures in proposal §4 and check the document copies in CI")
 
 ## 5. Project Outcomes
 

@@ -44,6 +44,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python .github/scripts/check_repo.py
+      # Team rule (#147, docs/aidlc/harness-log.md): proposal §4 carries full copies of
+      # docs/specs and docs/design made by scripts/inline_docs.py. Fail when a copy is
+      # stale or was edited by hand, so an edit inside a copy is caught at review time
+      # instead of being erased the next time someone reruns the script.
+      - name: Proposal §4 document copies are current
+        run: python scripts/inline_docs.py --check
 
   # Runs only in kyoungshin/CPSC490 (skipped in every team copy). Teams copy
   # the scaffold with `git archive`, which drops `export-ignore` files, so
