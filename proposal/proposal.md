@@ -914,10 +914,10 @@ Figure 7 shows how a SonarX client moves between dashboard pages. Each page answ
 
 *Figure 8 — UML sequence diagram of one PNL run. It answers one question: in
 what order do the components talk to each other, and what do they pass, when
-the pipeline runs once. Source: [`diagrams/pnl-run-sequence.mmd`](diagrams/pnl-run-sequence.mmd).
-Step numbers and FR numbers are from [`pnl-calculation.md`](../specs/pnl-calculation.md).*
+the pipeline runs once. Source: [`pnl-run-sequence.mmd`](../docs/design/diagrams/pnl-run-sequence.mmd).
+Step numbers and FR numbers are from [`pnl-calculation.md`](../docs/specs/pnl-calculation.md).*
 
-Figure 7 displays what happens when we compute profit and loss in order. Time runs from the top of the diagram to the bottom, where each column is a part of our system. Pull trades requests SonarX's Snowflake database for the last 12 months of trades and results. It then hands those off to build positions where it groups the trades into a position for each and every wallet as well as its market and outcom. It then matches each one to its market's result and marks whether its open or closed.
+Figure 8 displays what happens when we compute profit and loss in order. Time runs from the top of the diagram to the bottom, where each column is a part of our system. Pull trades requests SonarX's Snowflake database for the last 12 months of trades and results. It then hands those off to build positions where it groups the trades into a position for each and every wallet as well as its market and outcom. It then matches each one to its market's result and marks whether its open or closed.
 
 Compute PnL calculates te profit or loss on each position then adds up each wallets total, and saves the results.
 
