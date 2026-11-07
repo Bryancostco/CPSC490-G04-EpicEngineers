@@ -60,3 +60,4 @@ The mentor approves this finished list before any interface design is merged.
 | Date | Change | Author |
 |------|--------|--------|
 | October 26, 2026 | Initial draft | Leila De Belen |
+| November 5, 2026 | Erel Saul approved questions (#124) | Leila De Belen |
