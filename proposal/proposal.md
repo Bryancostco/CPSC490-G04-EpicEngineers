@@ -1167,6 +1167,8 @@ In Sprint 3, Bryan Orozco brought the repository in line with the course's Sprin
 
 Later in Sprint 3, Bryan Orozco copied the full text of every specification and design document into this section, under the paragraph that indexes it, so the proposal can be read on its own; the documents in `docs/` remain the versions the team edits. Each summary now lives in its own document so every figure appears once, and CI checks that the copies match their sources. He is also writing the Sprint 3 review. [[task:#141]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/141 "Bring the full text of every spec and design document into proposal §4") [[task:#142]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/142 "Write the Sprint 3 review (docs/sprint-reviews/sprint-3.md)") [[task:#147]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/147 "Fix duplicate figures in proposal §4 and check the document copies in CI")
 
+Bryan Orozco also drafted §5, §6 and §7 for the team to edit before report draft #2: the outcomes and what prototype v0 shows, the spring timeline for CPSC 491, and the AI usage disclosure. [[task:#149]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/149 "Draft proposal §5 Project Outcomes, §6 Project Timeline and §7 AI Usage")
+
 ## 5. Project Outcomes
 
 > Describe the outcomes or deliverables, e.g., final project report, user
@@ -1177,30 +1179,38 @@ Later in Sprint 3, Bryan Orozco copied the full text of every specification and 
 > however small, running when this proposal is submitted). Briefly describe
 > what your v0 demonstrates and how to run it.
 
-〈**One or two paragraphs** explaining the project outcome overall — what will
-exist when the project is finished, and what it will let someone do. Keep it
-prose, not a checklist; name the deliverables inside the paragraphs, and say
-briefly what prototype v0 demonstrates today and how to run it.〉
+When the project is finished, SonarX will have a working profit and loss tool for Polymarket built on its own Polygon data in Snowflake. A SonarX client will be able to open the dashboard, see the most profitable traders over a chosen time window, sort and filter that leaderboard by total PNL or by return on investment, and open any wallet to see its open and closed positions, its realized and unrealized PNL, and the trading behaviors behind its results. Behind the dashboard sits a Python pipeline that reads Polymarket trades and market resolutions, groups them into positions, matches each sale against the oldest purchase first, and computes PNL, rankings and behavior metrics as of a stated time.
+
+The deliverables are the team GitHub repository, which holds the pipeline, its tests, the specification and design documents and every sprint review; a validation report comparing our PNL for at least 25 wallets with Predicts.guru and Polymarket Analytics; a written comparison of the top 100 traders with all other wallets, with at least three observations; the dashboard, with every page loading in under 3 seconds on our demo data; a record of SonarX's feedback from the dashboard demo; and the final report.
+
+Prototype v0 lives in `prototype/` and runs today without Snowflake credentials. It loads the worked example from our PNL specification, groups the trades into positions with a lot for every purchase, flags positions whose trade history is incomplete, and marks each position open or closed against its market's resolution. It also holds the settings and Snowflake client the pipeline will use on SonarX's data once credentials arrive. To run it, install Python 3.12, then from `prototype/` run `pip install -r requirements.txt` and `python -m pytest -q`; each test checks one requirement of the specification on the worked example. `prototype/README.md` covers setup and the live smoke query.
 
 ## 6. Project Timeline
 
 > Identifies tasks (project objectives) to be performed, milestones to be
 > met, and the estimated number of hours for each task.
 
-〈**This is the plan for CPSC 491 next semester — the implementation timeline,
-not this semester's proposal work.** Identify the tasks (your objectives from
-§2), the milestones, and the estimated hours for each, in the order they will
-be built. State the assumptions it rests on (sponsor availability, data
-access, hardware).〉
+In CPSC 491 we build the objectives in §2 in the order the data flows: first the PNL of every proxy wallet, then validation and rankings, then the behavior analysis, with the dashboard built alongside the analysis so the two meet for the demo to SonarX. The spring semester is planned as 16 weeks; week 16 is kept for the final report and presentation.
 
 | Task (objective) | Milestone | Owner | Est. hours | Spring phase |
 |---|---|---|---|---|
-| 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 |
-| 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 |
+| 1.1 Collect Polymarket trades and market resolutions from SonarX's Snowflake data | Extract queries return the 12 month window, checked against SonarX's schema documents | Justin Cox, Kyle Quach | 40 | Phase 1, weeks 1 to 4 |
+| 1.2 Associate each wallet's trades with their market resolutions | Every position is marked open or closed on SonarX's data | Kyle Quach | 24 | Phase 1, weeks 1 to 4 |
+| 1.3 Compute realized and unrealized PNL for each proxy wallet | Wallet PNL for the full window, with the worked example still passing | Justin Cox | 40 | Phase 1, weeks 1 to 4 |
+| 1.4 Test the PNL of at least 25 wallets against Predicts.guru and Polymarket Analytics | Validation report with every discrepancy explained | Bryan Orozco | 24 | Phase 2, weeks 5 to 7 |
+| 2.1 Compute PNL and ROI for each wallet and produce the leaderboard | PNL and ROI rankings with tie breaks and minimum activity rules | Kyle Quach | 24 | Phase 2, weeks 5 to 7 |
+| 2.2 Analyze the trading behaviors of each ranked wallet | Win rate, average entry price, categories and holding period for every ranked wallet | Justin Cox | 40 | Phase 3, weeks 8 to 10 |
+| 2.3 Compare the top 100 traders with all other wallets | At least three written observations on profitable versus unprofitable traders | Justin Cox, Bryan Orozco | 24 | Phase 3, weeks 8 to 10 |
+| 3.1 Get the dashboard question list approved by SonarX | Done this fall: approved by our mentor on November 5, 2026 | Leila De Belen | 0 | Done in CPSC 490 |
+| 3.2 Build the leaderboard page with filtering and sorting | Leaderboard answers the approved questions on the demo data | Leila De Belen | 24 | Phase 4, weeks 8 to 13 |
+| 3.3 Build the wallet lookup page | Positions, PNL and behaviors shown for any wallet | Leila De Belen | 40 | Phase 4, weeks 8 to 13 |
+| 3.4 Make every page load in under 3 seconds on the demo data | Measured load times recorded for every page | Kyle Quach | 16 | Phase 4, weeks 8 to 13 |
+| 3.5 Show the dashboard to SonarX and record their feedback | Demo held, feedback recorded and an issue filed for each change | Bryan Orozco | 16 | Phase 5, weeks 14 and 15 |
+| Final report and presentation | Final report submitted | Whole team | 40 | Week 16 |
 
-〈Do **not** put this fall's four proposal sprints here — those live on the
-project board and in `docs/sprint-reviews/`. This section answers "how does
-the system actually get built next semester?"〉
+The hours are estimates of 8 hours per story point on each objective's issue, plus the final report, about 350 hours in total or about 5 hours per member per week. We will revise them at the first spring sprint planning, once our fall velocity is final.
+
+The plan rests on these assumptions. SonarX's Snowflake credentials and its schema documents for the Polymarket tables arrive before the spring semester begins; if they do not, Phase 1 slips by the same amount, and validation (1.4) shrinks to fewer wallets before anything later is cut. Our mentor at SonarX and SonarX's data owner stay available in the SonarX Slack channel. The data covers the last 12 months of Polygon data, as agreed at kickoff. Where the results are stored and which dashboard framework we use are decided in week 1, because Phase 4 depends on both. Mapping proxy wallets to their owners' wallets and real time data are SonarX's second phase and are outside the objectives in §2, so they are not scheduled here.
 
 ## 7. AI Usage
 
@@ -1214,8 +1224,25 @@ the system actually get built next semester?"〉
 > fully responsible for the correctness of all AI-assisted work, including
 > the prototype code.
 
-〈Your disclosure. Naming the tool is not disclosure — name what it drafted,
-what fraction of each artifact was AI-assisted, and how you verified it.〉
+The team used Claude (Anthropic), through Claude Code and the Claude app. Every commit an assistant helped write carries an `Assisted-by: Claude` trailer, as `docs/git-workflow.md` asks, so the fractions below are measured from the repository: the share of each artifact's current lines whose latest change came from an AI assisted commit, as of November 7, 2026. The measure overstates AI use where an assistant only touched a line, for example to add a citation tag, so each author reviews the row for their own work.
+
+| Artifact | Written by | AI assisted share | What the assistant did |
+|---|---|---|---|
+| Proposal §0 and §1 | Leila De Belen, Justin Cox, Bryan Orozco | about 15% of §1, none of §0 | Formatting in Justin's update to the introduction and problem statements |
+| Proposal §2 | Bryan Orozco, from the goals and objectives the team locked on October 11 | most lines | Drafted the text from the locked goals and added the issue citation tags |
+| Proposal §3 | Leila De Belen | most lines | Helped draft the approach (Leila to describe how) |
+| Proposal §4 paragraphs and §5 to §7 | Bryan Orozco | most lines | Drafted the environment, work item and outcome paragraphs, the timeline and this section, which Bryan edited |
+| `docs/specs/pnl-calculation.md` | Bryan Orozco | all | Drafted the specification and its worked example |
+| `docs/specs/trader-ranking.md` | Justin Cox | none recorded | |
+| `docs/specs/dashboard-questions.md` | Leila De Belen | none recorded | |
+| `docs/design/architecture.md`, `implementation.md` | Kyle Quach | none recorded | |
+| `docs/design/data-model.md` | Justin Cox | none recorded | |
+| `docs/design/data-flow.md` | Bryan Orozco | all | Drafted the document and both data flow diagrams |
+| `docs/design/dashboard-flow.md` | Leila De Belen | all | Helped draft the page flow document and fix its image |
+| `prototype/` code and tests | Bryan Orozco | all | Wrote the settings, Snowflake client, position builder, resolution matching and their tests |
+| `scripts/inline_docs.py` | Bryan Orozco | all | Wrote the script that copies the documents into §4 |
+
+We verified AI assisted work in four ways. Every change landed through a pull request approved by a teammate who did not write it, with continuous integration green. The prototype's tests check each requirement against the worked example in the PNL specification, whose expected results were computed by hand. The repository harness checks every cited issue, link and document against the repository. The metrics will also be checked by hand for three wallets by a teammate who did not write the code.
 
 ## 8. References
 
