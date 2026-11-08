@@ -13,12 +13,24 @@ The short version. Details are linked from each line.
    prompts in [`docs/aidlc/prompt-library.md`](docs/aidlc/prompt-library.md).
 4. **Run the harness before you push:**
    `python .github/scripts/check_repo.py`
+   If you changed anything in `docs/specs/` or `docs/design/`, also run
+   `python scripts/inline_docs.py`: proposal §4 carries a full copy of every
+   specification and design document (#141), and this refreshes it.
 5. **Open a pull request into `develop`**, fill in the template: link the
    story (`Closes #n`), say what you verified, disclose AI use.
 6. **A teammate who is not the author reviews it** against
    [`docs/checklists.md`](docs/checklists.md) and names the items they
    checked — reviewing is real work here, not a rubber stamp.
 7. **Green CI + one approval → squash merge**, branch deleted.
+   GitHub itself only honours `Closes #n` on merges into `main`, so
+   `.github/workflows/close-linked-issues.yml` closes the linked issues when
+   a PR merges into `develop`, `release/*` or `hotfix/*` (#82). Name the
+   task or feature you finished, not the story above it, unless the story's
+   acceptance criteria are met.
+8. **Every new issue goes on the chain** (setup guide §4): story → feature →
+   task → sub-task as sub-issues, one assignee, the sprint milestone, no
+   `sp:` below a story, and a paragraph in proposal §4 that ends with its
+   reference, e.g. `[feature:#83]`.
 
 ## Working agreements we hold ourselves to
 

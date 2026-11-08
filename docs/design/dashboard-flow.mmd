@@ -1,0 +1,12 @@
+flowchart LR
+    Start([Client opens dashboard])
+    LB["Leaderboard page<br/>top traders, filter, sort"]
+    Search["Enter a wallet address"]
+    WL["Wallet lookup page<br/>open and closed positions,<br/>realized and unrealized PNL,<br/>trading behaviors"]
+
+    Start --> LB
+    Start --> Search
+    Search --> WL
+    LB -->|"click a trader"| WL
+    WL -->|"back to leaderboard"| LB
+    LB -->|"change window, filter or sort"| LB
