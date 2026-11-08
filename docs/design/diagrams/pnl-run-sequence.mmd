@@ -1,0 +1,23 @@
+%% Figure 1: UML sequence diagram of one PNL run. Editable source for pnl-run-sequence.png.
+%% Lifelines are the components in docs/design/architecture.md (high level architecture).
+%% Step numbers are the pipeline steps in docs/specs/pnl-calculation.md (Pipeline steps);
+%% FR numbers are that specification's functional requirements.
+sequenceDiagram
+  participant DB as SonarX-owned<br/>Snowflake database
+  participant PT as Pull trades
+  participant BP as Build positions
+  participant CP as Compute PnL
+  participant RS as Results storage<br/>pending #35;52
+
+  Note over PT: Run starts for as of time T.<br/>What starts a run is not designed yet.
+  PT->>DB: 1. query trades<br/>(12 month window ending at T)
+  DB-->>PT: trades
+  PT->>DB: 1. query market resolutions
+  DB-->>PT: resolutions
+  PT->>BP: trades and resolutions
+  BP->>BP: 2. build positions and FIFO lots,<br/>realize sales (FR-1 to FR-7)
+  BP->>BP: 3. match to resolutions, set open<br/>or closed (FR-8 to FR-10)
+  BP->>CP: positions: remaining lots, status,<br/>incomplete flag, realized PNL from sales,<br/>payout per share
+  CP->>CP: 4. realize resolved lots, mark open lots,<br/>total per wallet (FR-11 to FR-15)
+  Note over CP: Latest price source is open<br/>(spec question Q3), so not drawn.
+  CP->>RS: save results:<br/>PNL per position and per wallet
