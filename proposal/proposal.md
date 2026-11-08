@@ -1355,11 +1355,11 @@ The team used Claude (Anthropic), through Claude Code and the Claude app. The co
 |---|---|---|---|
 | Proposal §0 and §1 | Leila De Belen, Justin Cox, Bryan Orozco | about 15% of §1, none of §0 | Formatting in Justin's update to the introduction and problem statements |
 | Proposal §2 | Bryan Orozco, from the goals and objectives the team locked on October 11 | most lines | Drafted the text from the locked goals and added the issue citation tags |
-| Proposal §3 | Leila De Belen | most lines | Helped draft the approach (Leila to describe how) |
+| Proposal §3 | Leila De Belen | most lines | Claude drafted a first version of the four approaches from our notes with the meeting with Erel. I rewrote the draft to specify which decisions we decided to make and checked that they line up with the end goal of the project |
 | Proposal §4 paragraphs and §5 to §7 | Bryan Orozco | most lines | Drafted the environment, work item and outcome paragraphs, the timeline and this section, which Bryan edited |
 | `docs/specs/pnl-calculation.md` | Bryan Orozco | all | Drafted the specification and its worked example |
 | `docs/specs/trader-ranking.md` | Justin Cox | none recorded | |
-| `docs/specs/dashboard-questions.md` | Leila De Belen | none recorded | |
+| `docs/specs/dashboard-questions.md` | Leila De Belen | Claude | Helped draft the questions clients would have about the website, and I reworded the final questions we asked Erel Saul |
 | `docs/design/architecture.md`, `implementation.md` | Kyle Quach | none recorded | |
 | `docs/design/data-model.md` | Justin Cox | none recorded | |
 | `docs/design/data-flow.md` | Bryan Orozco | all | Drafted the document and both data flow diagrams |
