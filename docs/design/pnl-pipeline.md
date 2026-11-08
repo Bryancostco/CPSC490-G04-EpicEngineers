@@ -28,6 +28,10 @@ the pipeline runs once? Source:
 [`diagrams/pnl-run-sequence.mmd`](diagrams/pnl-run-sequence.mmd). Step numbers
 and FR numbers are from [`pnl-calculation.md`](../specs/pnl-calculation.md).*
 
+Figure 1 displays what happens when we compute profit and loss in order. Time runs from the top of the diagram to the bottom, where each column is a part of our system. Pull trades requests SonarX's Snowflake database for the last 12 months of trades and results. It then hands those off to build positions where it groups the trades into a position for each and every wallet as well as its market and outcome. It then matches each one to its market's result and marks whether it's open or closed.
+
+Compute PnL calculates the profit or loss on each position, then adds up each wallet's total and saves the results.
+
 ## 2. Lifelines
 
 One lifeline for each component in the high level architecture in
