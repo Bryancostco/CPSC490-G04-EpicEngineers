@@ -59,6 +59,7 @@ Merged into `develop` or `main` so far this sprint:
 |---|---|---|---|
 | #49 Write §3 Proposed Approach | @leiladb | 2 | PR #77, merged Oct 27 |
 | #80 Revision of the architecture and system context diagrams | @kyquach | under #56 | PR #81, merged Nov 5 into `main` |
+| #59 PNL run sequence diagram | @justincox8 | under #87 | PR #151, merged Nov 8 |
 
 The rest of this table is filled in on Nov 9.
 
@@ -72,7 +73,6 @@ Final reasons are added on Nov 9. Known so far:
 | #105 Snowflake extract queries | @kyquach | Same | Same |
 | #110, #111 FIFO realized PNL, unrealized PNL and totals | @justincox8 | In progress on Nov 7; #108 and #109 merged Nov 5 | Carried to Sprint 4 if not merged by Nov 9 |
 | #116 to #119 Rankings and behavior metrics | @kyquach, @justincox8 | Wait on #111 | Sprint 4 |
-| #59 PNL run sequence diagram | @justincox8 | Not started | Decide on Nov 10 |
 | #106 Architecture document in six sections | @kyquach | Not started; after PR #81 the document is only diagrams | Decide on Nov 10 |
 
 ## Loop health (docs/aidlc/loop-engineering.md §8)
