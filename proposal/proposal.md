@@ -1358,10 +1358,10 @@ The team used Claude (Anthropic), through Claude Code and the Claude app. The co
 | Proposal §3 | Leila De Belen | most lines | Claude drafted a first version of the four approaches from our notes with the meeting with Erel. I rewrote the draft to specify which decisions we decided to make and checked that they line up with the end goal of the project |
 | Proposal §4 paragraphs and §5 to §7 | Bryan Orozco | most lines | Drafted the environment, work item and outcome paragraphs, the timeline and this section, which Bryan edited |
 | `docs/specs/pnl-calculation.md` | Bryan Orozco | all | Drafted the specification and its worked example |
-| `docs/specs/trader-ranking.md` | Justin Cox | none recorded | |
+| `docs/specs/trader-ranking.md` | Justin Cox | most lines | drafted much of document with some manual fixes |
 | `docs/specs/dashboard-questions.md` | Leila De Belen | Claude | Helped draft the questions clients would have about the website, and I reworded the final questions we asked Erel Saul |
 | `docs/design/architecture.md`, `implementation.md` | Kyle Quach | none recorded | |
-| `docs/design/data-model.md` | Justin Cox | none recorded | |
+| `docs/design/data-model.md` | Justin Cox | all | Drafted document and the data-model diagram |
 | `docs/design/data-flow.md` | Bryan Orozco | all | Drafted the document and both data flow diagrams |
 | `docs/design/dashboard-flow.md` | Leila De Belen | all | Helped draft the page flow document and fix its image |
 | `prototype/` code and tests | Bryan Orozco | all | Wrote the settings, Snowflake client, position builder, resolution matching and their tests |
