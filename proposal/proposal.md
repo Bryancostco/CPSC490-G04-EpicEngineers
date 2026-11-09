@@ -1366,6 +1366,10 @@ In Sprint 3, Bryan Orozco brought the repository in line with the course's Sprin
 
 Later in Sprint 3, Bryan Orozco copied the full text of every specification and design document into this section, under the paragraph that indexes it, so the proposal can be read on its own; the documents in `docs/` remain the versions the team edits. Each summary now lives in its own document so every figure appears once, and CI checks that the copies match their sources. He is also writing the Sprint 3 review. [[task:#141]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/141 "Bring the full text of every spec and design document into proposal §4") [[task:#142]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/142 "Write the Sprint 3 review (docs/sprint-reviews/sprint-3.md)") [[task:#147]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/147 "Fix duplicate figures in proposal §4 and check the document copies in CI")
 
+
+Later Sprint 3 work covers the remaining repository, proposal and release tasks. Bryan Orozco updates the AI instructions to reflect the course changes, obtains SonarX SonarQ console access and Snowflake credentials, and prepares the 0.4 release by merging develop into main. The team also removes the blank review row placeholder from the documentation and drafts proposal sections 5 and 6, covering project outcomes and the project timeline. [[task:#149]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/149) [[task:#152]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/152) [[task:#153]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/153) [[task:#154]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/154) [[task:#155]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/155)
+
+
 ## 5. Project Outcomes
 
 > Describe the outcomes or deliverables, e.g., final project report, user
