@@ -16,6 +16,9 @@ The short version. Details are linked from each line.
    If you changed anything in `docs/specs/` or `docs/design/`, also run
    `python scripts/inline_docs.py`: proposal §4 carries a full copy of every
    specification and design document (#141), and this refreshes it.
+   Write a document's summary or figure paragraph in the document itself,
+   not in §4: the script replaces everything between a copy's markers, and
+   CI fails if a copy is stale (#147).
 5. **Open a pull request into `develop`**, fill in the template: link the
    story (`Closes #n`), say what you verified, disclose AI use.
 6. **A teammate who is not the author reviews it** against
