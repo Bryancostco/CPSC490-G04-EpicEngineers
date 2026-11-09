@@ -1360,7 +1360,7 @@ The team used Claude (Anthropic), through Claude Code and the Claude app. The co
 | `docs/specs/pnl-calculation.md` | Bryan Orozco | all | Drafted the specification and its worked example |
 | `docs/specs/trader-ranking.md` | Justin Cox | most lines | drafted much of document with some manual fixes |
 | `docs/specs/dashboard-questions.md` | Leila De Belen | Claude | Helped draft the questions clients would have about the website, and I reworded the final questions we asked Erel Saul |
-| `docs/design/architecture.md`, `implementation.md` | Kyle Quach | none recorded | |
+| `docs/design/architecture.md`, `implementation.md` | Kyle Quach | Drafted first draft of implementation.md document and diagrams  | |
 | `docs/design/data-model.md` | Justin Cox | all | Drafted document and the data-model diagram |
 | `docs/design/data-flow.md` | Bryan Orozco | all | Drafted the document and both data flow diagrams |
 | `docs/design/dashboard-flow.md` | Leila De Belen | all | Helped draft the page flow document and fix its image |
