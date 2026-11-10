@@ -1237,6 +1237,7 @@ Figure 7 is a dashboard organized around two entry points that both lead to a si
 
 <!-- inline:end docs/design/dashboard-flow.md -->
 
+The dashboard specification, [`docs/specs/dashboard.md`](../docs/specs/dashboard.md), defines the two pages of the client facing dashboard, the leaderboard and the wallet lookup page, and what each one shows. It covers how the leaderboard sorts by total PNL and by return on investment, how the time window and filters change it, how a client reaches a wallet by clicking a trader or entering an address, and the 3 second load target on our demo data. It also lists the questions still open for our mentor, including whether the markets and strategies and early movers pages from the question list are deferred. It serves Objective 3.2, Objective 3.3 and Objective 3.4. [[task:#125]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/125 "Write docs/specs/dashboard.md (scope, requirements, acceptance criteria, open questions)")
 
 ### Planned activities: the work items
 
