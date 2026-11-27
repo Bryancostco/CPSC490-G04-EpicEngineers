@@ -69,7 +69,7 @@ to note the document and date. That check is **not done yet**:
 
 | SonarX schema document | Received through Slack on | Checked against Figure 1 on |
 |---|---|---|
-| 〈document name〉 | 〈date〉 | 〈date〉 |
+|  | 11/19/2026 |  |
 
 When the documents arrive, fill in this table, rename the two boxes and their
 columns to match, and remove "inferred" from Figure 1 in the same pull request.
