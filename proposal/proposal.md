@@ -85,7 +85,49 @@ The implementation stack and tooling are detailed in §4.
 
 ## 4. Required Environment, Resources, and Planned Activities
 
-Our project will run its queries on Snowflake, which is the main warehouse SonarX uses for its Polygon blockchain data, as confirmed at our kickoff meeting with SonarX. SonarX allows us to use open source tools and libraries. The PNL pipeline is written in Python and runs outside Snowflake: it reads trades and market resolutions through the Snowflake Python connector, and builds positions, FIFO lots and profit and loss in Python using exact decimals, so the worked examples in our specifications become automated tests directly. We chose this over computing PNL in SQL inside Snowflake, where FIFO matching across partial sales is hard to express and to test, and over Python running inside Snowflake, which depends on what SonarX's account allows. Where the computed results are stored and which framework the dashboard uses have not been chosen yet; we will record them in this section once the team decides. [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4")
+### Environment and resources
+
+This part lists every tool and resource the project depends on and why we chose it. Most of the environment was fixed by our sponsor or by the course; the rest follows from how the PNL pipeline is built, decided on November 5, 2026. Two choices are still open, and the last subsection says what each depends on. [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4")
+
+#### Data: SonarX's Polygon blockchain data in Snowflake
+
+All of our input data comes from SonarX's Polygon blockchain data, which holds Polymarket's trades and market resolutions. SonarX keeps this data in Snowflake, its main data warehouse, and our mentor confirmed at the kickoff meeting that our queries run there. Using SonarX's warehouse is a requirement of the project rather than a choice: the point of the tool is to show what SonarX's own data can answer for its clients. Phase 1 covers the last 12 months of Polygon data, a window our mentor set on October 20 and said could be extended later. [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20 "SNX-1 Kickoff Meeting Notes (Oct 6, 2026)")
+
+#### Access: SonarX's Slack channel and Snowflake credentials
+
+Questions about tables and columns go to SonarX's data owner in the SonarX Slack channel, and SonarX issues Snowflake credentials and the schema documents for the Polymarket tables through that channel. Credentials for all four members are still being arranged. Until they arrive, the prototype is built and tested on fixtures, and the one test that needs a live connection is skipped. [[task:#153]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/153 "Get SonarX console access and Snowflake credentials for all four members")
+
+#### Language: Python 3.12, running outside Snowflake
+
+The PNL pipeline is written in Python 3.12 and runs on our own machines, not inside Snowflake. We considered three options. Computing PNL in SQL inside Snowflake was rejected because matching sales against the oldest shares bought first, across partial sales, is hard to express and harder to test in SQL. Running Python inside Snowflake was rejected because it depends on what SonarX's account allows us to deploy. Python outside Snowflake reads the data once and keeps every rule in ordinary code, where the worked examples in our specifications become automated tests directly. SonarX allows open source tools and libraries, so nothing here needs a license.
+
+#### Libraries: the Snowflake connector, exact decimals and local settings
+
+The pipeline reads trades and resolutions through `snowflake-connector-python`, the connector Snowflake publishes for Python, pinned to version 5.2.0 in `prototype/requirements.txt` so every member and CI install the same build. Prices, share counts and profit and loss are held in Python's built in `decimal.Decimal` type and never in floating point, because binary floating point cannot represent most cent amounts exactly, and small rounding errors summed over thousands of trades would make our totals disagree with the benchmarks we validate against. `python-dotenv` loads a local, untracked `.env` file so each member can supply Snowflake settings without putting them in the code. [[task:#62]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/62 "Wire prototype v0 infrastructure: project skeleton and Snowflake connection")
+
+#### Configuration and secrets
+
+Snowflake connection settings, including the password, are supplied only through environment variables, and the repository holds only `.env.example` with placeholder values. The implementation design forbids hardcoding a password or writing it to logs, screenshots, error messages or documentation, and the repository harness, which runs on every pull request, fails if a secret is committed. This keeps SonarX's credentials out of a repository that our instructor and classmates can read. [[task:#61]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/61 "Write docs/design/implementation.md (module layout, configuration, build order)")
+
+#### Testing: pytest on fixtures
+
+Tests are written with `pytest`, pinned to version 9.2.0, and live in `prototype/tests/`. Unit tests run on small fixtures, including the worked example in the PNL specification, whose expected results were computed by hand, so each functional requirement has a test that fails if its rule is removed. An integration test runs a smoke query against Snowflake when credentials are present and is skipped otherwise. We chose pytest because it is the standard test runner for Python and needs no extra setup to collect plain test functions.
+
+#### Repository, board and continuous integration: GitHub
+
+The code, specifications, designs and this proposal live in one GitHub repository, and our work is tracked as GitHub issues on a project board, with goals as epics and objectives as user stories, as the course requires. GitHub Actions runs three required checks on every pull request into our integration branch and our main branch: the repository harness, the prototype build and tests on Python 3.12, and a check that the pull request links its issue and discloses AI use. Branch protection requires those checks to pass, the branch to be up to date, and one approval from a teammate who did not write the change before anything merges. A workflow we added also closes the linked issues when a pull request merges into our integration branch, which GitHub does not do on its own. [[task:#82]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/82 "Bring repo in line with Sprint 3 instructions: auto close, issue chain, §4 prose")
+
+#### Documents and the Word export: Markdown, Mermaid and pandoc
+
+Every specification and design is a Markdown document in `docs/`, and most diagrams are written in Mermaid, as text files in `docs/design/diagrams/`, so they are versioned and reviewed like code. This proposal is written in Markdown as well and converted to the course Word template with pandoc and the course's filter, which is how it is submitted.
+
+#### AI assistant: Claude
+
+The team uses Claude, from Anthropic, through Claude Code and the Claude app, to draft documents, code and tests. Every commit an assistant helped write carries an `Assisted-by` trailer, and every change still passes the same review and checks as any other. §7 describes what the assistant did for each artifact and how we verified it.
+
+#### Not chosen yet: result storage and the dashboard framework
+
+Two parts of the environment have not been chosen: where the pipeline stores its computed results, and which framework the dashboard is built with. We are recording what each choice depends on rather than guessing. The dashboard specification requires every page to load in under 3 seconds on our demo data, and the planned work serves both pages from rankings and wallet summaries computed ahead of time, so the store has to answer a page's reads within that limit while the heavy computation happens before any page is opened. The framework has to render the leaderboard and wallet lookup pages described in the dashboard specification and the page flow design, call the results API, and be something the member who builds the pages can work in. We will record both choices in this section, with the alternatives we rejected, once the team decides. [[feature:#100]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/100 "Results API that serves the dashboard pages") [[task:#130]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/130 "Serve leaderboard and wallet results from precomputed tables") [[task:#131]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/131 "Precompute rankings and wallet summaries so pages read stored results") [[task:#132]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/132 "Measure every page's load time on the demo data and record the results")
 
 ### Specification and design documents
 
