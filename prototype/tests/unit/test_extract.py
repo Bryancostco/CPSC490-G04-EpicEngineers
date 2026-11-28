@@ -4,7 +4,7 @@ from decimal import Decimal
 from pathlib import Path
 import pytest
 
-from src.database.extract import (
+from database.extract import (
     ExtractionError, SourceSchema, build_trades_sql, build_resolutions_sql,
     fetch_trades, fetch_resolutions,
 )
