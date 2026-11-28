@@ -3,7 +3,7 @@ from pathlib import Path  # locate prototype/.env.example
 
 import pytest  # test runner and assertions on raised errors
 
-from config.settings import (  # the module under test
+from src.config.settings import (  # the module under test
     MissingSettingsError,  # raised when settings are incomplete
     has_snowflake_settings,  # tells live tests whether to run
     load_settings,  # builds the settings record

@@ -1,8 +1,8 @@
 """Tests for #62: the Snowflake client opens, uses and always closes its connection, with a fake connector."""
 import pytest  # test runner
 
-from config.settings import load_settings  # builds settings from a fake environment
-from database.snowflake_client import fetch_rows, snowflake_connection  # the module under test
+from src.config.settings import load_settings  # builds settings from a fake environment
+from src.database.snowflake_client import fetch_rows, snowflake_connection  # the module under test
 
 # Fake settings; none of these are real credentials.
 fake_settings = load_settings({

@@ -7,8 +7,8 @@ from decimal import Decimal  # exact numbers (NFR-2)
 
 import pytest  # error assertions
 
-from services.positions import Trade, build_positions  # positions from #108
-from services.resolutions import Resolution, closed_status, open_status, set_status  # the code under test
+from src.services.positions import Trade, build_positions  # positions from #108
+from src.services.resolutions import Resolution, closed_status, open_status, set_status  # the code under test
 
 # Keys of the worked example's two positions.
 position_a = ("0xwallet_w", "M1", "M1_YES")  # W holds YES in M1

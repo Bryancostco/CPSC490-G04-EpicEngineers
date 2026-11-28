@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from services.pnl_ranking import (
+from src.services.pnl_ranking import (
     WalletRanking,
     RankingConfig,
     build_roi_rankings,

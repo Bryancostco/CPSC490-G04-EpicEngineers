@@ -1,8 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 
-from services.positions import Trade
-from services.pnl_ranking import build_wallet_summaries
+from src.services.positions import Trade
+from src.services.pnl_ranking import build_wallet_summaries
 
 
 def test_wallet_is_incomplete_if_any_position_is_incomplete():
