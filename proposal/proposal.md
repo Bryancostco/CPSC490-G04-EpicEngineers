@@ -571,8 +571,10 @@ The dashboard question list, [`docs/specs/dashboard-questions.md`](../docs/specs
 
 ### Dashboard Questions (Objective 3.1, #34)
 
-**Status:** Draft, awaiting mentor approval
+**Status:** Approved by the mentor on November 5, 2026, with the changes below. Strategy labels (Section 4, item 3) are still open.
+
 **Parent:** Goal 3 (#33)
+
 **Related:** Performance requirement in #37
 
 **1. Purpose**
@@ -583,48 +585,55 @@ This document lists the questions clients want the PNL dashboard to answer. For 
 
 | Page | Purpose |
 |------|---------|
-| **P1. Trader Leaderboard** | Rank wallets by PNL over a selectable time window |
+| **P1. Trader Leaderboard** | Rank wallets by PNL over a selectable time window, with a consistency metric for each wallet |
 | **P2. Trader Profile** | Drill-down on a single wallet: PNL history, positions, trades |
-| **P3. Markets & Strategies** | Break down returns by market, category, and strategy |
+| **P3. Markets & Strategies** | Break down returns by market, category, and strategy. Showing all wallets together (Q8) is a stretch goal. |
 | **P4. Early Movers** | Identify wallets that are consistently early on winning outcomes |
 
 **3. Client questions**
 
 Source column: **Mentor** = from mentor guidance (#20), **Proposed** = added by the team for mentor review.
+Status column: result of the mentor's review on November 5, 2026.
 
-| ID | Question | Data that answers it | Page | Source |
-|----|----------|----------------------|------|--------|
-| Q1 | Who are the most profitable traders over a given window? | Per-wallet realized PNL, unrealized PNL, total PNL, return on investment (ROI), and win rate (share of closed positions that were profitable), aggregated over the selected date range; trade timestamps | P1 | Mentor |
-| Q2 | What markets and strategies drive their returns? | Per-wallet PNL grouped by market, market category, and strategy label; position sizes and holding periods | P3 (linked from P2) | Mentor |
-| Q3 | Which wallets are consistently early on winning outcomes? | Entry timestamp and entry price per position vs. market open, price path, and resolution time; resolved outcome per position | P4 | Mentor |
-| Q4 | How consistent is a trader's profitability, or is it driven by a few big wins? | Per-position PNL distribution, win rate, PNL by period, largest-win share of total PNL | P2 | Proposed |
-| Q5 | How much capital does a trader deploy, and what return do they earn on it? | Position sizes, capital at risk over time, PNL divided by capital deployed | P1, P2 | Proposed |
-| Q6 | How does a trader's PNL change over time? | Cumulative realized and unrealized PNL time series per wallet | P2 | Proposed |
-| Q7 | What is a trader currently holding, and how much is unrealized? | Open positions, current mark price, unrealized PNL, linked market resolution date | P2 | Proposed |
-| Q8 | Which markets or categories are the most profitable for traders overall? | PNL and volume aggregated across all wallets by market and category | P3 | Proposed |
+| ID | Question | Data that answers it | Page | Source | Status |
+|----|----------|----------------------|------|--------|--------|
+| Q1 | Who are the most profitable traders over a given window, and how consistent are they? | Per-wallet realized PNL, unrealized PNL, total PNL, return on capital, and trade timestamps, aggregated over the selected window. Consistency metric: win rate (share of closed positions that were profitable) or share of total PNL from the wallet's top few trades. Count of resolved trades. | P1 | Mentor | Approved. Absorbs Q4. |
+| Q2 | What markets and strategies drive their returns? | Per-wallet PNL grouped by market, market category, and strategy label; position sizes and holding periods | P3 (linked from P2) | Mentor | Approved |
+| Q3 | Which wallets are consistently early on winning outcomes? | Entry price (implied probability) and entry timestamp per position; price movement after entry toward the winning outcome; time between entry and resolution; resolved outcome per position | P4 | Mentor | Approved |
+| Q4 | How consistent is a trader's profitability, or is it driven by a few big wins? | (moved to Q1) | P1 | Proposed | Merged into Q1 as a consistency metric on the leaderboard, not its own view |
+| Q5 | How much capital does a trader deploy, and what return do they earn on it? | Position sizes, capital at risk over time, PNL divided by capital deployed | P1, P2 | Proposed | Approved. Return on capital is a toggle on the leaderboard (Section 4, item 1). |
+| Q6 | How does a trader's PNL change over time? | Cumulative realized and unrealized PNL time series per wallet | P2 | Proposed | Approved |
+| Q7 | What is a trader currently holding, and how much is unrealized? | Open positions, last traded price, unrealized PNL, linked market resolution date | P2 | Proposed | Approved |
+| Q8 | Which markets or categories are the most profitable for traders overall? | PNL and volume aggregated across all wallets by market and category | P3 | Proposed | Stretch goal. Build only if time remains at the end. |
 
-**4. Definitions to settle with the mentor**
+**4. Definitions**
 
-These affect how questions are answered, so they need a decision before design starts.
+Decisions from Erel Saul's message of November 5, 2026.
 
-1. **Profitable.** Ranked by total PNL, realized-only PNL, or return on capital? Is there a minimum trade count or volume so tiny wallets do not top the board?
-2. **Early (Q3).** Measured as time before resolution, time since market open, or price moved in the trader's favor after entry? What threshold counts as "consistently"?
-3. **Strategy (Q2).** Which labels do we derive from on-chain data (for example holding period, market category, position sizing, or buying the favorite vs. the underdog)?
-4. **Time windows.** Which presets (7d, 30d, 90d, all-time) plus custom range?
-5. **Unrealized PNL.** What mark price do we use for open positions?
+1. **Profitable (Q1, Q5): settled.** Rank by total PNL (realized + unrealized) by default, with return on capital as a toggle. A wallet needs at least 10 resolved trades to appear on the leaderboard, so one lucky bet cannot top it.
+2. **Early (Q3): settled.** "Early" means the price moved in the trader's favor after entry: they bought at a low implied probability before the market repriced toward the winning outcome. Time before resolution is a secondary filter.
+3. **Strategy (Q2): open.** The mentor did not answer which labels to derive from on-chain data (for example holding period, market category, position sizing, or favorite vs. underdog).
+4. **Time windows: settled.** 7d, 30d, 90d, and all-time. A custom range was not mentioned in the reply, so it is not included.
+5. **Unrealized PNL: settled.** Open positions are marked at the last traded price. Unrealized PNL is always labeled as unrealized and shown separately from realized PNL.
+
+Still to settle (not answered on November 5):
+
+- What counts as "low implied probability," how large a price move counts as "repriced," and what threshold counts as "consistently" early (Q3).
+- Whether the 10 resolved trades minimum counts trades or positions, and whether it applies inside the selected window or over all time (Q1).
+- Whether the consistency metric is win rate, share of PNL from the top few trades, or both, and how many trades is "a few" (Q1).
 
 **5. Non-functional requirement**
 
-Main views (P1 to P4) should load within a few seconds, per mentor guidance and #37. Questions that require heavy aggregation (Q1, Q3) may need precomputed tables. Confirm the specific target in #37.
+Main views (P1 to P4) should load in under 3 seconds on the demo data, per mentor guidance and Objective 3.4 (#37). Questions that require heavy aggregation (Q1, Q3) may need precomputed tables.
 
 **6. Approval**
 
 The mentor approves this finished list before any interface design is merged.
 
-- [ ] Mentor approved
+- [x] Mentor approved
 - **Approver:** Erel Saul
-- **Date:**
-- **Evidence:** (link to meeting notes or PR/issue comment)
+- **Date:** November 5, 2026
+- **Evidence:** Erel Saul's Slack message of November 5, 2026 (link to a comment on #124 or paste the message there)
 
 **7. Change log**
 
@@ -632,6 +641,7 @@ The mentor approves this finished list before any interface design is merged.
 |------|--------|--------|
 | October 26, 2026 | Initial draft | Leila De Belen |
 | November 5, 2026 | Erel Saul approved questions (#124) | Leila De Belen |
+| November 8, 2026 | Applied mentor feedback: merged Q4 into Q1, made Q8 a stretch goal, settled definitions 1, 2, 4 and 5, set the 3 second target, recorded approval | Leila De Belen |
 
 <!-- inline:end docs/specs/dashboard-questions.md -->
 
@@ -1311,6 +1321,124 @@ Figure 8 is a dashboard organized around two entry points that both lead to a si
 
 <!-- inline:end docs/design/dashboard-flow.md -->
 
+The dashboard specification, [`docs/specs/dashboard.md`](../docs/specs/dashboard.md), defines the two pages of the client facing dashboard, the leaderboard and the wallet lookup page, and what each one shows. It covers how the leaderboard sorts by total PNL and by return on investment, how the time window and filters change it, how a client reaches a wallet by clicking a trader or entering an address, and the 3 second load target on our demo data. It also lists the questions still open for our mentor, including whether the markets and strategies and early movers pages from the question list are deferred. It serves Objective 3.2, Objective 3.3 and Objective 3.4. [[task:#125]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/125 "Write docs/specs/dashboard.md (scope, requirements, acceptance criteria, open questions)") [[feature:#96]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/96 "Dashboard specification (Goal 3)")
+
+<!-- inline:begin docs/specs/dashboard.md (copied by scripts/inline_docs.py: edit docs/specs/dashboard.md, then rerun the script) -->
+
+Epic: #33 · Stories: #35, #36, #37 · Feature: #96
+
+### Specification — Client-facing dashboard (Goal 3)
+
+Owner: Leila De Belen · Sprint: 3 · Status: draft
+
+*What SonarX clients see and do in the dashboard: which pages exist, what each
+page shows, how the leaderboard is sorted and filtered, and how fast pages
+must load. The leaderboard and wallet lookup pages are built and tested
+against this document. It answers the client questions approved by our SonarX
+mentor in `docs/specs/dashboard-questions.md` (#95), referred to below as DQ1
+to DQ8 so they are not confused with this document's open questions (OQ).*
+
+**Scope**
+
+**In scope.** The two pages in Goal 3 and the flow between them, as drawn in
+`docs/design/dashboard-flow.md` (#97):
+
+- **P1 Trader Leaderboard**: the PNL ranking and the ROI ranking, with a
+  change of time window and filtering (Objective 3.2, DQ1, DQ5).
+- **P2 Trader Profile**, the wallet lookup page: one wallet's open and closed
+  positions, realized and unrealized PNL, and trading behaviors (Objective 3.3,
+  DQ4 to DQ7).
+- Two ways into P2: clicking a trader on P1, or entering a wallet address.
+- A load time under 3 seconds for every page on our demo data (Objective 3.4,
+  #37).
+
+**Out of scope.** P3 Markets and Strategies and P4 Early Movers in the
+question list (DQ2, DQ3, DQ8). No Goal 3 objective, page flow or data flow
+covers them, and OQ-1 asks our mentor whether they are deferred. How PNL is
+calculated (`docs/specs/pnl-calculation.md`, #55). How traders are ranked and
+how ROI, win rate and the other metrics are computed
+(`docs/specs/trader-ranking.md`, #54). Which tables and columns hold the data
+(`docs/specs/data-sources.md`, #25). Linking proxy wallets to owner (EOA)
+wallets, which is Phase 2. Real time data.
+
+**Pages**
+
+| Page | What it shows | Ways to reach it | Answers |
+|---|---|---|---|
+| P1 Trader Leaderboard | Top wallets in the PNL ranking or the ROI ranking, with controls for time window and filter | Opening the dashboard; back from P2 | DQ1, DQ5 |
+| P2 Trader Profile (wallet lookup) | One wallet's open and closed positions, realized and unrealized PNL, and trading behaviors | Clicking a trader on P1; entering a wallet address | DQ4 to DQ7 |
+
+**Functional requirements**
+
+Written in EARS form ("when a trigger happens, the system shall respond") so each
+one becomes a test almost verbatim. Terms such as position, realized PNL and
+unrealized PNL mean what `docs/specs/pnl-calculation.md` defines; ROI, win
+rate, the rankings and the other metrics mean what
+`docs/specs/trader-ranking.md` defines.
+
+| ID | Requirement | Story |
+|---|---|---|
+| FR-1 | When a client opens the dashboard, the system shall show P1 and a way to enter a wallet address. | #35 |
+| FR-2 | When P1 is shown, the system shall list the wallets of the selected ranking, up to the ranking size N, with each wallet's rank, address, realized PNL, unrealized PNL, total PNL, ROI and win rate. | #35 |
+| FR-3 | When P1 is shown, the system shall show the as of time and the window the ranking was run with, and for the ROI ranking the minimum activity thresholds and N it used. | #35 |
+| FR-4 | When a client sorts by total PNL, the system shall show the PNL ranking: all wallets ordered by total PNL, highest first, with the tie breaks in `trader-ranking.md` (FR-4, FR-5). | #35 |
+| FR-5 | When a client sorts by ROI, the system shall show the ROI ranking: only eligible wallets ordered by ROI, highest first, with the tie breaks in `trader-ranking.md` (FR-6 to FR-8). | #35 |
+| FR-6 | When a client changes the time window, the system shall update P1 for that window without leaving the page. | #35 |
+| FR-7 | When a client applies a filter, the system shall show only the wallets that match it, without leaving the page. | #35 |
+| FR-8 | When a client clicks a trader on P1, the system shall open P2 for that trader's wallet. | #35 |
+| FR-9 | When a client enters a wallet address, the system shall open P2 for that address. | #36 |
+| FR-10 | If the entered address is not a valid wallet address, then the system shall show an error message and stay on the current page. | #36 |
+| FR-11 | When a client goes back from P2, the system shall return to P1. | #36 |
+| FR-12 | When P2 is shown, the system shall list the wallet's open positions and closed positions separately. | #36 |
+| FR-13 | When P2 shows an open position, the system shall show its mark price and its unrealized PNL; when it shows a closed position, the system shall show its realized PNL. The mark price is the latest price, as `pnl-calculation.md` defines. | #36 |
+| FR-14 | When P2 is shown, the system shall show the wallet's realized PNL, unrealized PNL and their total, as computed under `pnl-calculation.md` (FR-14 there). | #36 |
+| FR-15 | When P2 is shown, the system shall show the wallet's win rate, average entry price, market categories traded and holding period, as `trader-ranking.md` defines them (FR-11 to FR-18 there), including the counts of open and incomplete positions. | #36 |
+| FR-16 | When a wallet is flagged incomplete, the system shall show the flag on the wallet's row on P1 and on its P2 page. | #35, #36 |
+
+**Non-functional requirements**
+
+| ID | Requirement | Why it matters here |
+|---|---|---|
+| NFR-1 | Every dashboard page shall load in under 3 seconds on our demo data. | Objective 3.4 (#37) sets this target. |
+| NFR-2 | The pages shall read rankings and wallet results that were computed ahead of time, and shall not recompute PNL or rankings when a page is requested. | A full FIFO pass over 12 months per request would not meet NFR-1; the data flow design (#58) and the plan in proposal §4 (#131) both compute ahead of time. |
+| NFR-3 | A PNL, ROI or metric figure shown on the dashboard shall equal the figure the calculation produced for the same wallet and as of time. | The dashboard must not drift from the numbers #28 validates. |
+| NFR-4 | Prices, shares and PNL are rounded only when displayed. | Matches NFR-2 of `pnl-calculation.md` and `trader-ranking.md`. |
+
+**Acceptance criteria (epic level)**
+
+- [ ] A client can open the dashboard, sort by total PNL and by ROI, change the
+      window and apply a filter, click a trader, and return to P1, all through
+      the served interface and not by calling functions in a console.
+- [ ] A client can enter a valid wallet address and reach P2, and an invalid
+      address shows an error and does not change the page.
+- [ ] P2 shows open positions, closed positions, realized PNL, unrealized PNL
+      and trading behaviors for the chosen wallet.
+- [ ] A wallet below the minimum activity thresholds is missing from the ROI
+      sort but present in the PNL sort, with a test (wallet Z in the ranking
+      spec's worked example).
+- [ ] For a sample wallet, the PNL on the page matches the calculation output
+      for that wallet.
+- [ ] Every page loads in under 3 seconds on the demo data, measured the way
+      OQ-6 settles.
+- [ ] FR-1 to FR-16 each have a test that fails if the behavior is removed.
+- [ ] Every functional requirement cites a story, and every open question
+      below has an owner.
+- [ ] This document is listed in proposal §4 under Specification and design
+      documents.
+
+**Open questions**
+
+| Question | Owner | Needed by |
+|---|---|---|
+| OQ-1. Are P3 Markets and Strategies and P4 Early Movers (DQ2, DQ3, DQ8) deferred? No Goal 3 objective, the page flow (#97) or the data flow (#58) covers them. If they are in, each needs an objective, a page in the flow diagram, and the open definitions of "early" and strategy labels from `dashboard-questions.md` §4. (ask Erel) | TBD | before this PR is merged |
+| OQ-2. Which time windows does a client choose from? The question list proposes 7d, 30d, 90d and all-time plus a custom range, but both specs use one fixed 12 month window ending at T. Does the pipeline precompute each window, or is the selector limited to what is precomputed? What are the default window, the default sort, and the ranking size N (starting value 100, `trader-ranking.md` Q2)? (ask Erel) | TBD | before FR-2 and FR-6 are implemented |
+| OQ-3. Which filters does the leaderboard offer? Task #127 says the approved question list calls for filters, but the list names none. (ask Erel) | TBD | before FR-7 is implemented |
+| OQ-4. Several things in the question list are not defined in either spec: cumulative realized and unrealized PNL over time (DQ6), PNL by period, per-position PNL distribution and largest-win share (DQ4), capital at risk over time (DQ5), a list of the wallet's trades, and the resolution date of an open position (DQ7). Which are in this phase, and which spec defines each? ROI (total PNL ÷ total amount spent) already covers PNL divided by capital deployed. | TBD | before FR-13 to FR-15 are implemented |
+| OQ-5. Trading metrics are computed only for ranked wallets (`trader-ranking.md` FR-11, Q5), but FR-9 lets a client look up any address. What does P2 show for a valid address that is not ranked, and for one with no trades in the data? | TBD | before FR-9 and FR-15 are implemented |
+| OQ-6. What counts as "loaded" for the 3 second target (first content, full table, or everything), and on what size of demo data is it measured? | TBD | before NFR-1 is tested |
+| OQ-7. When a client goes back to P1, are the window, filter and sort they chose kept? And once `pnl-calculation.md` Q1 and `trader-ranking.md` Q1 are answered, are incomplete wallets left out, ranked with a warning, or ranked as is? FR-16 only shows the flag. | TBD | before FR-11 and FR-16 are implemented |
+
+<!-- inline:end docs/specs/dashboard.md -->
 
 ### Planned activities: the work items
 
@@ -1320,15 +1448,15 @@ The goals and objectives in §2 are tracked as epics and user stories. Each user
 
 Objective 1.1 starts with a data source specification. Both of our specifications leave the question of which SonarX tables and columns hold each field to a separate document, because the answer depends on the Polymarket schema documentation SonarX shares with our Snowflake access. Justin Cox maps the trade and market resolution tables from that documentation and writes the specification, covering scope, functional and non functional requirements, acceptance criteria and open questions in the same form as our other specifications. [[feature:#83]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/83 "Data source specification for Polymarket trades and market resolutions") [[task:#103]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/103 "Map SonarX's Polymarket trade and resolution tables and columns from the schema docs") [[task:#104]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/104 "Write docs/specs/data-sources.md (scope, requirements, acceptance criteria, open questions)")
 
-The prototype reads those tables through one extraction layer in `prototype/src/database/`, so that position matching, PNL and ranking never talk to Snowflake directly and can be tested on synthetic fixtures. Kyle Quach first wires the project skeleton and the Snowflake connection, with credentials supplied only through environment variables, and then writes the read only queries that pull trades and resolutions for the 12 month Phase 1 window. [[feature:#84]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/84 "Snowflake extraction layer in prototype/src/database") [[task:#62]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/62 "Wire prototype v0 infrastructure: project skeleton and Snowflake connection") [[task:#105]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/105 "Write read only extract queries for trades and resolutions over the 12 month window, with fixture tests")
+The prototype reads those tables through one extraction layer in `prototype/src/database/`, so that position matching, PNL and ranking never talk to Snowflake directly and can be tested on synthetic fixtures. Bryan Orozco wired the project skeleton and the Snowflake connection in Sprint 3, with credentials supplied only through environment variables, and Kyle Quach writes the read only queries that pull trades and resolutions for the 12 month Phase 1 window once SonarX's console access arrives; Bryan Orozco is getting that access for the whole team. [[feature:#84]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/84 "Snowflake extraction layer in prototype/src/database") [[task:#62]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/62 "Wire prototype v0 infrastructure: project skeleton and Snowflake connection") [[task:#105]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/105 "Write read only extract queries for trades and resolutions over the 12 month window, with fixture tests") [[task:#153]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/153 "Get SonarX console access and Snowflake credentials for all four members")
 
-The structure of `prototype/` follows the architecture and implementation design. The high level architecture and system context diagrams merged in Sprint 2, and a revision of both diagrams is in review. The implementation design lays out the module folders, configuration and secret handling, and the order the prototype is built in. In Sprint 3 the architecture document is expanded into the six parts a design document needs: the system context, the components and their responsibilities, the data model, the data flow, the key decisions with the alternatives we rejected, and what is not designed yet. [[feature:#85]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/85 "Prototype architecture and implementation design") [[task:#56]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/56 "Write docs/design/architecture.md with high level architecture and system context diagrams") [[sub-task:#80]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/80 "Revision of High Level Architecture and System Context Diagrams") [[task:#61]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/61 "Write docs/design/implementation.md (module layout, configuration, build order)") [[task:#106]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/106 "Expand architecture.md into the six design sections Kyoung lists")
+The structure of `prototype/` follows the architecture and implementation design. The high level architecture and system context diagrams merged in Sprint 2, and Kyle Quach revised both in Sprint 3. The implementation design lays out the module folders, configuration and secret handling, and the order the prototype is built in. In Sprint 3 the architecture document is expanded into the six parts a design document needs: the system context, the components and their responsibilities, the data model, the data flow, the key decisions with the alternatives we rejected, and what is not designed yet. [[feature:#85]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/85 "Prototype architecture and implementation design") [[task:#56]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/56 "Write docs/design/architecture.md with high level architecture and system context diagrams") [[sub-task:#80]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/80 "Revision of High Level Architecture and System Context Diagrams") [[task:#61]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/61 "Write docs/design/implementation.md (module layout, configuration, build order)") [[task:#106]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/106 "Expand architecture.md into the six design sections Kyoung lists")
 
 Objective 1.2 rests on the position matching and PNL specification, which defines how trades become positions, how FIFO lots are built and matched, and when a position is open or closed. The draft merged in Sprint 2. Six open questions remain for our mentor and SonarX's data owner, about incomplete positions, trading fees, latest prices, other events that change a wallet's shares, payouts other than 1.00 or 0.00, and the validation tolerance; Bryan Orozco owns getting those answers. [[feature:#86]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/86 "Position matching and PNL specification") [[task:#55]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/55 "Draft docs/specs/pnl-calculation.md (Goal 1 definitions)") [[task:#107]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/107 "Get answers to PNL spec open questions Q1 to Q6 from Erel and Sergio")
 
 The PNL pipeline design shows how the pipeline steps fit together through three documents: the data model with its entity relationship diagram, the data flow design with its Level 0 and Level 1 diagrams, and the PNL pipeline design with a UML sequence diagram of one PNL run. The data flow design numbers its processes the same way the specifications number the pipeline steps, so a process in a diagram and a step in a specification always mean the same thing. [[feature:#87]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/87 "PNL pipeline design: data model, data flow and sequence diagrams") [[task:#57]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/57 "Write docs/design/data-model.md with the ER diagram") [[task:#58]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/58 "Write docs/design/data-flow.md with Level 0 and Level 1 data flow diagrams") [[task:#59]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/59 "Write docs/design/pnl-pipeline.md with a UML sequence diagram of a PNL run")
 
-The first half of the Sprint 3 demo slice is the position builder. Kyle Quach implements grouping trades into one position per wallet, market and outcome token with FIFO lots, including the rule that marks a position incomplete when a sale is larger than the shares held, and then the matching of each position to its market resolution to set it open or closed. Each functional requirement gets a test. [[feature:#88]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/88 "Position builder and resolution matching in the prototype (FR-1 to FR-5, FR-8 to FR-10)") [[task:#108]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/108 "Implement position grouping and lot building (FR-1 to FR-5) with tests") [[task:#109]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/109 "Implement resolution matching and open or closed status (FR-8 to FR-10) with tests")
+The first half of the Sprint 3 demo slice is the position builder. Bryan Orozco implemented grouping trades into one position per wallet, market and outcome token with FIFO lots, including the rule that marks a position incomplete when a sale is larger than the shares held, and then the matching of each position to its market resolution to set it open or closed. Each functional requirement has a test, and both merged in Sprint 3. [[feature:#88]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/88 "Position builder and resolution matching in the prototype (FR-1 to FR-5, FR-8 to FR-10)") [[task:#108]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/108 "Implement position grouping and lot building (FR-1 to FR-5) with tests") [[task:#109]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/109 "Implement resolution matching and open or closed status (FR-8 to FR-10) with tests")
 
 Objective 1.3 is the second half of the Sprint 3 slice. Justin Cox implements FIFO sale matching and realized PNL, using the worked example in the specification as tests that fail if any one rule is removed, and then unrealized PNL, wallet totals and the incomplete flag. Bryan Orozco writes the setup, run and test steps in `prototype/README.md` and updates §5 so the proposal says what the prototype does today. [[feature:#89]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/89 "Realized and unrealized PNL in the prototype (FR-6, FR-7, FR-11 to FR-15)") [[task:#110]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/110 "Implement FIFO sale matching and realized PNL (FR-6, FR-7, FR-11) with the worked example as tests") [[task:#111]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/111 "Implement unrealized PNL, wallet totals and the incomplete flag (FR-12 to FR-15) with tests") [[task:#112]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/112 "Write prototype/README.md setup, run and test steps for the PNL slice and update proposal §5")
 
@@ -1346,7 +1474,7 @@ Objective 2.3 compares the top 100 traders with all other wallets in Sprint 4. J
 
 #### Goal 3: the client facing dashboard
 
-Objective 3.1 comes before any part of the dashboard is built. Leila De Belen drafts the list of questions SonarX clients want the dashboard to answer, starting from the questions our mentor sent on October 20, and Bryan Orozco takes the list to our mentor for approval. [[feature:#95]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/95 "Dashboard client question list") [[task:#123]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/123 "Draft docs/specs/dashboard-questions.md from Erel's starting client questions") [[task:#124]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/124 "Get the dashboard question list approved by Erel")
+Objective 3.1 comes before any part of the dashboard is built. Leila De Belen drafted the list of questions SonarX clients want the dashboard to answer, starting from the questions our mentor sent on October 20, and our mentor approved it on November 5, 2026. [[feature:#95]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/95 "Dashboard client question list") [[task:#123]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/123 "Draft docs/specs/dashboard-questions.md from Erel's starting client questions") [[task:#124]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/124 "Get the dashboard question list approved by Erel")
 
 Objective 3.2 depends on two documents. The dashboard specification is the third of our specifications, one for each goal, and the dashboard page flow design shows how a user moves between the leaderboard and the wallet lookup page. The leaderboard page itself is built in Sprint 4: a table of top traders that sorts by total PNL and by return on investment, with the filters the approved question list calls for. [[feature:#96]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/96 "Dashboard specification (Goal 3)") [[task:#125]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/125 "Write docs/specs/dashboard.md (scope, requirements, acceptance criteria, open questions)") [[feature:#97]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/97 "Dashboard page flow design") [[task:#60]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/60 "Write docs/design/dashboard-flow.md with the page flow diagram") [[feature:#98]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/98 "Leaderboard page") [[task:#126]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/126 "Build the leaderboard table with sorting by total PNL and by ROI") [[task:#127]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/127 "Add the leaderboard filters the approved question list calls for")
 
@@ -1360,15 +1488,13 @@ Objective 3.5 closes the semester's work with a demonstration to SonarX. Bryan O
 
 Sprint 1 was mostly writing and setup. Justin Cox replaced the course setup guide with our team README and filled in the README and the assistant instructions, which Bryan Orozco later updated with the SNX-1 project details. Leila De Belen filled in the cover page and drafted the introduction, drawing on research by Kyle Quach on how prediction markets work and by Justin Cox on existing PNL and leaderboard tools. The team recorded the kickoff meeting with SonarX, and Bryan Orozco wrote the goals and objectives into this proposal and wrote the Sprint 1 review. [[task:#1]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/1 "Replace course setup guide README with team README template") [[task:#3]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/3 "Fill in team README.md and CLAUDE.md") [[task:#10]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/10 "README and CLAUDE.md") [[task:#11]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/11 "Fill proposal cover page and draft §1 Introduction: background") [[sub-task:#12]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/12 "Research: how prediction markets and Polymarket work") [[sub-task:#13]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/13 "Research: existing Polymarket PNL and leaderboard tools") [[task:#20]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/20 "SNX-1 Kickoff Meeting Notes (Oct 6, 2026)") [[task:#41]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/41 "Write §2 Goals and Objectives and §4 work item links into proposal.md") [[task:#42]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/42 "Write the Sprint 1 review (docs/sprint-reviews/sprint-1.md)")
 
-Sprint 2 continued the proposal. Leila De Belen wrote §3, and Bryan Orozco filled in the development plan, replaced the template references with our sources, condensed the team's research into one project context document, cited the Sprint 2 work items in this section, and is writing the Sprint 2 review. Recording the chosen prototype stack is still open, because the stack has not been decided. [[task:#49]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/49 "Write §3 Proposed Approach in proposal.md") [[task:#50]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/50 "Fill in docs/development-plan.md") [[task:#51]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/51 "Fix §8 References in proposal.md") [[task:#63]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/63 "Write the team source of truth doc from today's research") [[task:#65]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/65 "Cite the Sprint 2 work items in proposal §4") [[task:#53]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/53 "Write the Sprint 2 review (docs/sprint-reviews/sprint-2.md)") [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4")
+Sprint 2 continued the proposal. Leila De Belen wrote §3, and Bryan Orozco filled in the development plan, replaced the template references with our sources, condensed the team's research into one project context document, cited the Sprint 2 work items in this section, and wrote the Sprint 2 review. The prototype stack was decided early in Sprint 3 and is recorded at the start of this section. [[task:#49]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/49 "Write §3 Proposed Approach in proposal.md") [[task:#50]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/50 "Fill in docs/development-plan.md") [[task:#51]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/51 "Fix §8 References in proposal.md") [[task:#63]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/63 "Write the team source of truth doc from today's research") [[task:#65]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/65 "Cite the Sprint 2 work items in proposal §4") [[task:#53]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/53 "Write the Sprint 2 review (docs/sprint-reviews/sprint-2.md)") [[task:#52]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/52 "Record the chosen prototype stack in CLAUDE.md and proposal §4")
 
 In Sprint 3, Bryan Orozco brought the repository in line with the course's Sprint 3 guidance: pull requests merged into our integration branch now close their issues, every user story is broken into features and tasks, and this section describes the work in prose. [[task:#82]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/82 "Bring repo in line with Sprint 3 instructions: auto close, issue chain, §4 prose")
 
 Later in Sprint 3, Bryan Orozco copied the full text of every specification and design document into this section, under the paragraph that indexes it, so the proposal can be read on its own; the documents in `docs/` remain the versions the team edits. Each summary now lives in its own document so every figure appears once, and CI checks that the copies match their sources. He is also writing the Sprint 3 review. [[task:#141]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/141 "Bring the full text of every spec and design document into proposal §4") [[task:#142]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/142 "Write the Sprint 3 review (docs/sprint-reviews/sprint-3.md)") [[task:#147]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/147 "Fix duplicate figures in proposal §4 and check the document copies in CI")
 
-
-Later Sprint 3 work covers the remaining repository, proposal and release tasks. Bryan Orozco updates the AI instructions to reflect the course changes, obtains SonarX SonarQ console access and Snowflake credentials, and prepares the 0.4 release by merging develop into main. The team also removes the blank review row placeholder from the documentation and drafts proposal sections 5 and 6, covering project outcomes and the project timeline. [[task:#149]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/149) [[task:#152]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/152) [[task:#153]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/153) [[task:#154]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/154) [[task:#155]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/155)
-
+Bryan Orozco also drafted §5, §6 and §7 for the team to edit before report draft #2: the outcomes and what prototype v0 shows, the spring timeline for CPSC 491, and the AI usage disclosure. He updated the team's AI rules for the course's change on AI assisted proposal writing, and corrected who built each part of the Sprint 3 prototype in this section. At the end of Sprint 3 he releases the sprint's work to our main branch as version 0.4. He is also getting SonarX console access and Snowflake credentials for the whole team, and Justin Cox removes the blank review row placeholder from the data model design. [[task:#149]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/149 "Draft proposal §5 Project Outcomes, §6 Project Timeline and §7 AI Usage") [[task:#152]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/152 "Update our AI rules for the course change and fix stale facts in proposal §4") [[task:#154]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/154 "Release 0.4: merge develop into main for the Sprint 3 review and tag v0.4") [[task:#153]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/153 "Get SonarX console access and Snowflake credentials for all four members") [[task:#155]](https://github.com/Bryancostco/CPSC490-G04-EpicEngineers/issues/155 "Remove the blank review row placeholder in docs/design/data-model.md")
 
 ## 5. Project Outcomes
 
@@ -1380,30 +1506,38 @@ Later Sprint 3 work covers the remaining repository, proposal and release tasks.
 > however small, running when this proposal is submitted). Briefly describe
 > what your v0 demonstrates and how to run it.
 
-〈**One or two paragraphs** explaining the project outcome overall — what will
-exist when the project is finished, and what it will let someone do. Keep it
-prose, not a checklist; name the deliverables inside the paragraphs, and say
-briefly what prototype v0 demonstrates today and how to run it.〉
+When the project is finished, SonarX will have a working profit and loss tool for Polymarket built on its own Polygon data in Snowflake. A SonarX client will be able to open the dashboard, see the most profitable traders over a chosen time window, sort and filter that leaderboard by total PNL or by return on investment, and open any wallet to see its open and closed positions, its realized and unrealized PNL, and the trading behaviors behind its results. Behind the dashboard sits a Python pipeline that reads Polymarket trades and market resolutions, groups them into positions, matches each sale against the oldest purchase first, and computes PNL, rankings and behavior metrics as of a stated time.
+
+The deliverables are the team GitHub repository, which holds the pipeline, its tests, the specification and design documents and every sprint review; a validation report comparing our PNL for at least 25 wallets with Predicts.guru and Polymarket Analytics; a written comparison of the top 100 traders with all other wallets, with at least three observations; the dashboard, with every page loading in under 3 seconds on our demo data; a record of SonarX's feedback from the dashboard demo; and the final report.
+
+Prototype v0 lives in `prototype/` and runs today without Snowflake credentials. It loads the worked example from our PNL specification, groups the trades into positions with a lot for every purchase, flags positions whose trade history is incomplete, and marks each position open or closed against its market's resolution. It also holds the settings and Snowflake client the pipeline will use on SonarX's data once credentials arrive. To run it, install Python 3.12, then from `prototype/` run `pip install -r requirements.txt` and `python -m pytest -q`; each test checks one requirement of the specification on the worked example. `prototype/README.md` covers setup and the live smoke query.
 
 ## 6. Project Timeline
 
 > Identifies tasks (project objectives) to be performed, milestones to be
 > met, and the estimated number of hours for each task.
 
-〈**This is the plan for CPSC 491 next semester — the implementation timeline,
-not this semester's proposal work.** Identify the tasks (your objectives from
-§2), the milestones, and the estimated hours for each, in the order they will
-be built. State the assumptions it rests on (sponsor availability, data
-access, hardware).〉
+In CPSC 491 we build the objectives in §2 in the order the data flows: first the PNL of every proxy wallet, then validation and rankings, then the behavior analysis, with the dashboard built alongside the analysis so the two meet for the demo to SonarX. The spring semester is planned as 16 weeks; week 16 is kept for the final report and presentation.
 
 | Task (objective) | Milestone | Owner | Est. hours | Spring phase |
 |---|---|---|---|---|
-| 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 |
-| 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 | 〈…〉 |
+| 1.1 Collect Polymarket trades and market resolutions from SonarX's Snowflake data | Extract queries return the 12 month window, checked against SonarX's schema documents | Justin Cox, Kyle Quach | 40 | Phase 1, weeks 1 to 4 |
+| 1.2 Associate each wallet's trades with their market resolutions | Every position is marked open or closed on SonarX's data | Kyle Quach | 24 | Phase 1, weeks 1 to 4 |
+| 1.3 Compute realized and unrealized PNL for each proxy wallet | Wallet PNL for the full window, with the worked example still passing | Justin Cox | 40 | Phase 1, weeks 1 to 4 |
+| 1.4 Test the PNL of at least 25 wallets against Predicts.guru and Polymarket Analytics | Validation report with every discrepancy explained | Bryan Orozco | 24 | Phase 2, weeks 5 to 7 |
+| 2.1 Compute PNL and ROI for each wallet and produce the leaderboard | PNL and ROI rankings with tie breaks and minimum activity rules | Kyle Quach | 24 | Phase 2, weeks 5 to 7 |
+| 2.2 Analyze the trading behaviors of each ranked wallet | Win rate, average entry price, categories and holding period for every ranked wallet | Justin Cox | 40 | Phase 3, weeks 8 to 10 |
+| 2.3 Compare the top 100 traders with all other wallets | At least three written observations on profitable versus unprofitable traders | Justin Cox, Bryan Orozco | 24 | Phase 3, weeks 8 to 10 |
+| 3.1 Get the dashboard question list approved by SonarX | Done this fall: approved by our mentor on November 5, 2026 | Leila De Belen | 0 | Done in CPSC 490 |
+| 3.2 Build the leaderboard page with filtering and sorting | Leaderboard answers the approved questions on the demo data | Leila De Belen | 24 | Phase 4, weeks 8 to 13 |
+| 3.3 Build the wallet lookup page | Positions, PNL and behaviors shown for any wallet | Leila De Belen | 40 | Phase 4, weeks 8 to 13 |
+| 3.4 Make every page load in under 3 seconds on the demo data | Measured load times recorded for every page | Kyle Quach | 16 | Phase 4, weeks 8 to 13 |
+| 3.5 Show the dashboard to SonarX and record their feedback | Demo held, feedback recorded and an issue filed for each change | Bryan Orozco | 16 | Phase 5, weeks 14 and 15 |
+| Final report and presentation | Final report submitted | Whole team | 40 | Week 16 |
 
-〈Do **not** put this fall's four proposal sprints here — those live on the
-project board and in `docs/sprint-reviews/`. This section answers "how does
-the system actually get built next semester?"〉
+The hours are estimates of 8 hours per story point on each objective's issue, plus the final report, about 350 hours in total or about 5 hours per member per week. We will revise them at the first spring sprint planning, once our fall velocity is final.
+
+The plan rests on these assumptions. SonarX's Snowflake credentials and its schema documents for the Polymarket tables arrive before the spring semester begins; if they do not, Phase 1 slips by the same amount, and validation (1.4) shrinks to fewer wallets before anything later is cut. Our mentor at SonarX and SonarX's data owner stay available in the SonarX Slack channel. The data covers the last 12 months of Polygon data, as agreed at kickoff. Where the results are stored and which dashboard framework we use are decided in week 1, because Phase 4 depends on both. Mapping proxy wallets to their owners' wallets and real time data are SonarX's second phase and are outside the objectives in §2, so they are not scheduled here.
 
 ## 7. AI Usage
 
@@ -1417,8 +1551,25 @@ the system actually get built next semester?"〉
 > fully responsible for the correctness of all AI-assisted work, including
 > the prototype code.
 
-〈Your disclosure. Naming the tool is not disclosure — name what it drafted,
-what fraction of each artifact was AI-assisted, and how you verified it.〉
+The team used Claude (Anthropic), through Claude Code and the Claude app. The course first required the proposal's prose to be our own writing; in early November 2026 our instructor allowed assistants to help write it as well, provided the use is disclosed here, and `docs/development-plan.md` §3 records the conditions we follow. Every commit an assistant helped write carries an `Assisted-by: Claude` trailer, as `docs/git-workflow.md` asks, so the fractions below are measured from the repository: the share of each artifact's current lines whose latest change came from an AI assisted commit, as of November 7, 2026. The measure overstates AI use where an assistant only touched a line, for example to add a citation tag, so each author reviews the row for their own work.
+
+| Artifact | Written by | AI assisted share | What the assistant did |
+|---|---|---|---|
+| Proposal §0 and §1 | Leila De Belen, Justin Cox, Bryan Orozco | about 15% of §1, none of §0 | Formatting in Justin's update to the introduction and problem statements |
+| Proposal §2 | Bryan Orozco, from the goals and objectives the team locked on October 11 | most lines | Drafted the text from the locked goals and added the issue citation tags |
+| Proposal §3 | Leila De Belen | most lines | Claude drafted a first version of the four approaches from our notes with the meeting with Erel. I rewrote the draft to specify which decisions we decided to make and checked that they line up with the end goal of the project |
+| Proposal §4 paragraphs and §5 to §7 | Bryan Orozco | most lines | Drafted the environment, work item and outcome paragraphs, the timeline and this section, which Bryan edited |
+| `docs/specs/pnl-calculation.md` | Bryan Orozco | all | Drafted the specification and its worked example |
+| `docs/specs/trader-ranking.md` | Justin Cox | most lines | drafted much of document with some manual fixes |
+| `docs/specs/dashboard-questions.md` | Leila De Belen | Claude | Helped draft the questions clients would have about the website, and I reworded the final questions we asked Erel Saul |
+| `docs/design/architecture.md`, `implementation.md` | Kyle Quach | Drafted first draft of implementation.md document and diagrams  | |
+| `docs/design/data-model.md` | Justin Cox | all | Drafted document and the data-model diagram |
+| `docs/design/data-flow.md` | Bryan Orozco | all | Drafted the document and both data flow diagrams |
+| `docs/design/dashboard-flow.md` | Leila De Belen | all | Helped draft the page flow document and fix its image |
+| `prototype/` code and tests | Bryan Orozco | all | Wrote the settings, Snowflake client, position builder, resolution matching and their tests |
+| `scripts/inline_docs.py` | Bryan Orozco | all | Wrote the script that copies the documents into §4 |
+
+We verified AI assisted work in four ways. Every change landed through a pull request approved by a teammate who did not write it, with continuous integration green. The prototype's tests check each requirement against the worked example in the PNL specification, whose expected results were computed by hand. The repository harness checks every cited issue, link and document against the repository. The metrics will also be checked by hand for three wallets by a teammate who did not write the code.
 
 ## 8. References
 
