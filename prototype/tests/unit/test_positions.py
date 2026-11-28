@@ -6,7 +6,7 @@ FR-6 (oldest lot first) and FR-7 (realized PNL) are tested in #110.
 from datetime import datetime, timezone  # block times for hand built trades
 from decimal import Decimal  # exact numbers (NFR-2)
 
-from services.positions import Trade, build_positions  # the code under test
+from src.services.positions import Trade, build_positions  # the code under test
 
 # One shared block time for hand built trades whose time does not matter to the test.
 some_time = datetime(2026, 1, 1, tzinfo=timezone.utc)
