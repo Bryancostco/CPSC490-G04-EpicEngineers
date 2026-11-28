@@ -7,10 +7,11 @@
 *What data the PNL pipeline reads from SonarX, what tables it builds from that
 data (positions, lots, wallet PNL and wallet metrics), and how they connect.*
 
-**Heads up: we do not have the SonarX tables yet.** The team has not received
-SonarX's schema documents, so the two SonarX boxes in Figure 1 are *inferred*
-from what our specifications need. Their names, columns and keys are our best
-guess and are marked PENDING. Our own five tables are drawn from the two
+**Heads up: the SonarX boxes have not been checked yet.** SonarX gave the team
+access to its Console, which holds its data catalog and data dictionaries, on
+November 19, 2026. We have not yet compared the two SonarX boxes in Figure 1
+against it, so they are still *inferred* from what our specifications need.
+Their names, columns and keys are our best guess and are marked PENDING. Our own four tables are drawn from the two
 specifications and do not depend on SonarX's naming.
 
 ## 1. The picture
@@ -27,9 +28,9 @@ how is it related? Editable source: [`diagrams/data-model.mmd`](diagrams/data-mo
 Comments on our columns cite the requirement that needs them (FR numbers are
 from the position spec unless marked "ranking").*
 
-Figure 1 shows how our data fits together. We start with two kinds of data from SonarX: the trades each wallet made and the results of the markets those trades were in. We don't have SonarX's table documentation yet, so those two boxes are our best guess based on what our specs need, and they're marked pending. From the trades we build a position for each wallet, market and outcome (YES or NO), and a lot for each buy so that sales can be matched against the oldest purchase first. A market's result, or running out of shares, closes a position, and each position records its profit and loss.
+Figure 1 shows how our data fits together. We start with two kinds of data from SonarX: the trades each wallet made and the results of the markets those trades were in. We haven't checked them against SonarX's table documentation yet, so those two boxes are our best guess based on what our specs need, and they're marked pending. From the trades we build a position for each wallet, market and outcome (YES or NO), and a lot for each buy so that sales can be matched against the oldest purchase first. A market's result, or running out of shares, closes a position, and each position records its profit and loss.
 
-From there the diagram rolls up. The wallet PNL table adds up a wallet's positions into one total, and the wallet metrics table holds the numbers we use to rank and describe traders, like ROI, win rate and average entry price. Everything in our own tables comes from a requirement in the PNL and ranking specs. Anything we haven't decided yet, such as tracking exactly which lots each sale used up, is left out on purpose and listed in the design document. Once SonarX sends its schema documents, we'll check the two SonarX boxes against them and note the document and date.
+From there the diagram rolls up. The wallet PNL table adds up a wallet's positions into one total, and the wallet metrics table holds the numbers we use to rank and describe traders, like ROI, win rate and average entry price. Everything in our own tables comes from a requirement in the PNL and ranking specs. Anything we haven't decided yet, such as tracking exactly which lots each sale used up, is left out on purpose and listed in the design document. Once we check the two SonarX boxes against SonarX's data dictionary, we'll update them and note the date.
 
 ## 2. The tables we create
 
@@ -58,21 +59,21 @@ time T", and the ranking spec (NFR-4) requires each output to state it.
 
 | Drawn as | What our specs need from it | Status |
 |---|---|---|
-| SonarX trades (inferred) | wallet, market, outcome token, buy or sell, price per share, shares, chain order (block, then position in block) and time | **pending**: no SonarX schema document received |
+| SonarX trades (inferred) | wallet, market, outcome token, buy or sell, price per share, shares, chain order (block, then position in block) and time | **pending**: Console access received, columns not checked yet |
 | SonarX resolutions (inferred) | resolved outcome, payout per share, resolution time | **pending**: same |
 
 The column names in these two boxes are the *ideas* the specs use, not real
 SonarX column names. Which SonarX table and column holds each field is the job
 of `docs/specs/data-sources.md` (#25). Task #57 asks us to check the source
-attributes against the SonarX schema documents that arrive through Slack and
-to note the document and date. That check is **not done yet**:
+attributes against SonarX's schema documents, which are in the SonarX Console,
+and to note the document and date. That check is **not done yet**:
 
-| SonarX schema document | Received through Slack on | Checked against Figure 1 on |
+| SonarX schema source | Access received on | Checked against Figure 1 on |
 |---|---|---|
-|  | 11/19/2026 |  |
+| SonarX Console: Data Catalog and Data Dictionary | 2026-11-19 | not checked yet |
 
-When the documents arrive, fill in this table, rename the two boxes and their
-columns to match, and remove "inferred" from Figure 1 in the same pull request.
+After the check, put its date in the last column, rename the two boxes and
+their columns to match, and remove "inferred" from Figure 1 in the same pull request.
 
 ## 5. Choices to confirm and things left out
 
