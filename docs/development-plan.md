@@ -82,11 +82,14 @@ the instructor before it is final.
 
 We use assistants to draft specification and design documents, diagrams,
 prototype code and tests, pull request descriptions, and review comments.
-The proposal's argument (the abstract and §1 to §3, §5 and §6) is our own
-writing, as the course template requires; an assistant may suggest
-structure or check it, but does not write it. An assistant may draft the
-short §4 index entries and the §8 reference entries, which the pull
-request's author rewrites or confirms in their own words before merge.
+The course template first said the proposal's prose must be our own
+writing. Kyoung changed that rule in class the week of Nov 2, 2026: an
+assistant may now help write the proposal too (#152). So an assistant may
+draft any section of the proposal, under three conditions. The pull
+request's author reads every sentence and can defend it at the sprint
+meeting. The facts, numbers and citations in it are checked against their
+source. And §7 AI Usage records which sections were AI assisted and how
+much.
 `CLAUDE.md` and `docs/project-context.md` give every teammate's assistant the
 same starting facts.
 
